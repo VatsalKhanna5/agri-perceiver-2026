@@ -2,4 +2,11 @@ km1/
 workspace/
 __pycache__/
 nohup.out
+*.logworkspace/
+km1/
+__pycache__/
+*.pt
+*.ckpt
 *.log
+.env
+logs/

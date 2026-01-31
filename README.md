@@ -1,53 +1,64 @@
-agri-perceiver/
-│
-├── configs/                     # Experiment configs only
-│   ├── stage1_pretrain.yaml
-│   ├── stage2_finetune.yaml
-│   └── inference.yaml
-│
-├── models/                      # Neural network modules
-│   ├── vision/
-│   │   └── siglip_wrapper.py
-│   │
-│   ├── spatial/
-│   │   └── tile_embeddings.py
-│   │
-│   ├── perceiver/
-│   │   └── perceiver_resampler.py
-│   │
-│   ├── projector/
-│   │   └── vision_projector.py
-│   │
-│   ├── llm/
-│   │   └── phi3_lora.py
-│   │
-│   └── agri_vlm.py              # FULL architecture assembly
-│
-├── data/                        # Dataset interface ONLY
-│   └── dataset_loader.py        # Reads tiles + JSONL (no labeling!)
-│
-├── training/
-│   ├── train_stage1.py
-│   ├── train_stage2.py
-│   ├── losses.py
-│   └── trainer_utils.py
-│
-├── inference/
-│   ├── generate_json.py
-│   ├── outlines_schema.py
-│   └── api_server.py
-│
-├── monitoring/
-│   ├── gpu_logger.py
-│   └── system_logger.py
-│
-├── scripts/
-│   ├── download_models.py
-│   └── run_training.sh
-│
-├── tests/
-│   └── test_forward_pass.py
-│
-├── .gitignore
-├── requirements.txt
-└── README.md
+## Environment Setup
+
+```bash
+python3 -m venv agri_env
+source agri_env/bin/activate
+```
+
+```bash
+pip install --upgrade pip setuptools wheel
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+
+pip install transformers accelerate peft bitsandbytes timm einops datasets
+pip install wandb fastapi uvicorn outlines pydantic pillow opencv-python tqdm
+```
+
+## Multi-GPU config
+
+```bash
+accelerate config
+accelerate test
+```
+## Github Access
+```bash
+ssh-keygen -t ed25519 -C "agri-perceiver-remote"
+cat ~/.ssh/id_ed25519.pub
+```
+
+## Run Logger
+```bash
+nohup python monitoring/gpu_logger.py &
+```
+
+Run logger:
+
+```bash
+nohup python monitoring/gpu_logger.py &
+```
+
+---
+
+## Dataset Usage
+
+Expected dataset format:
+
+```
+dataset_root/
+ ├── train.jsonl
+ ├── val.jsonl
+ └── tiles/
+     ├── img_001.pt
+```
+
+Load in training:
+
+```python
+from data.dataset_loader import AgriDataset
+
+dataset = AgriDataset(
+    jsonl_path="/workspace/exported_dataset/train.jsonl",
+    tiles_dir="/workspace/exported_dataset/tiles"
+)
+```
+
+
