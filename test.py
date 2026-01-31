@@ -1,9 +1,17 @@
 import torch
-from accelerate import Accelerator
+from models.perceiver.perceiver_resampler import PerceiverResampler
+from transformers import AutoTokenizer, AutoModelForCausalLM
 
-acc = Accelerator()
-print("Local rank:", acc.process_index, "Device:", torch.cuda.current_device())
+B = 2
+dummy = torch.randn(B, 3645, 3072)
 
-x = torch.randn(2048,2048).to(acc.device)
-y = x @ x
-print("Done on rank", acc.process_index)
+model = PerceiverResampler()
+out = model(dummy)
+
+print(out.shape)  # Expect [2, 128, 3072]
+
+special_tokens = {
+    "additional_special_tokens": ["<image_start>", "<image_end>"]
+}
+tokenizer.add_special_tokens(special_tokens)
+phi3.resize_token_embeddings(len(tokenizer))
