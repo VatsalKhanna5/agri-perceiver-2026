@@ -10,3 +10,60 @@ __pycache__/
 *.log
 .env
 logs/
+
+/configs/
+
+# --- AI/ML Specific ---
+model_cache/
+weights/
+*.pth
+*.pt
+*.ckpt
+*.bin
+*.onnx
+*.joblib
+
+# --- Data & Datasets ---
+data/
+datasets/
+*.csv
+*.jsonl
+*.parquet
+*.npy
+*.npz
+
+# --- Environments & Packages ---
+# Exclude your virtual environments (conda or venv)
+env/
+venv/
+.env/
+anaconda/
+lib/
+bin/
+share/
+include/
+
+# --- Logs & Monitoring ---
+logs/
+*.log
+lightning_logs/
+runs/
+wandb/
+tensorboard/
+.tensorboard/
+
+# --- Configs & Secrets ---
+# We keep paths.yaml but ignore actual secret keys if you have them
+.env
+.secrets
+*.key
+*.pem
+
+# --- Python & System ---
+__pycache__/
+*.py[cod]
+*$py.class
+.DS_Store
+.ipynb_checkpoints/
+.vscode/
+.idea/
