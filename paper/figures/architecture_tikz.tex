@@ -1,0 +1,90 @@
+% ── AgriPerceiver Architecture Diagram (TikZ) ─────────────────────────────
+% Include in main.tex with: \input{figures/architecture_tikz}
+
+\begin{figure*}[t]
+\centering
+\begin{tikzpicture}[
+    >=Stealth,
+    node distance=0.6cm and 1.0cm,
+    block/.style={
+        rectangle, draw, rounded corners=3pt, minimum height=0.9cm,
+        text centered, font=\small\sffamily, line width=0.5pt
+    },
+    vblock/.style={block, fill=visionblue!15, draw=visionblue!60},
+    bblock/.style={block, fill=bridgeorange!15, draw=bridgeorange!60},
+    lblock/.style={block, fill=llmred!15, draw=llmred!60},
+    gblock/.style={block, fill=lightgray, draw=gray!50},
+    arrow/.style={->, thick, color=gray!70},
+    label/.style={font=\tiny\sffamily, color=gray!80},
+]
+
+% ── Input ──────────────────────────────────────────────────────────────────
+\node[gblock, minimum width=2.2cm] (input) {Input Image\\$H{\times}W{\times}3$};
+
+% ── AnyRes Tiling ─────────────────────────────────────────────────────────
+\node[vblock, right=1.0cm of input, minimum width=2.4cm] (tiling)
+    {AnyRes Tiling\\5 tiles $\times$ $384^2$};
+
+% ── SigLIP ────────────────────────────────────────────────────────────────
+\node[vblock, right=1.0cm of tiling, minimum width=2.8cm] (siglip)
+    {\textbf{SigLIP-SO400M}\\{\tiny 400M params, frozen}};
+\node[label, below=0.1cm of siglip] {$[5, 729, 1152]$};
+
+% ── Tile Embeddings ───────────────────────────────────────────────────────
+\node[bblock, right=1.0cm of siglip, minimum width=2.4cm] (tile_emb)
+    {Tile Embeddings\\{\tiny learned spatial pos}};
+
+% ── Vision Projector ──────────────────────────────────────────────────────
+\node[bblock, right=1.0cm of tile_emb, minimum width=2.4cm] (projector)
+    {Vision Projector\\{\tiny MLP $1152{\to}3072$}};
+\node[label, below=0.1cm of projector] {$[3645, 3072]$};
+
+% ── Perceiver Resampler ──────────────────────────────────────────────────
+\node[bblock, below=1.2cm of projector, minimum width=3.0cm, minimum height=1.2cm]
+    (perceiver) {\textbf{Perceiver Resampler}\\{\tiny 128 latents, 2 blocks, 24 heads}\\{\tiny CrossAttn $\to$ SelfAttn $\to$ GLU-FFN}};
+\node[label, below=0.1cm of perceiver] {$3645 \to 128$ tokens ($28.5\times$)};
+
+% ── Splice-and-Forward ───────────────────────────────────────────────────
+\node[gblock, left=1.5cm of perceiver, minimum width=2.8cm] (splice)
+    {Splice-and-Forward\\{\tiny \texttt{<img\_start>} + $\mathbf{Z}$ + \texttt{<img\_end>}}};
+
+% ── Phi-3 ────────────────────────────────────────────────────────────────
+\node[lblock, left=1.5cm of splice, minimum width=3.0cm, minimum height=1.2cm]
+    (phi3) {\textbf{Phi-3-mini-128k}\\{\tiny 3.8B params}\\{\tiny LoRA $r{=}32$, $\alpha{=}64$}};
+
+% ── Output ───────────────────────────────────────────────────────────────
+\node[gblock, below=0.8cm of phi3, minimum width=2.8cm] (output)
+    {Structured JSON\\Diagnostic Report};
+
+% ── Arrows ───────────────────────────────────────────────────────────────
+\draw[arrow] (input) -- (tiling);
+\draw[arrow] (tiling) -- (siglip);
+\draw[arrow] (siglip) -- (tile_emb);
+\draw[arrow] (tile_emb) -- (projector);
+\draw[arrow] (projector) -- (perceiver);
+\draw[arrow] (perceiver) -- (splice);
+\draw[arrow] (splice) -- (phi3);
+\draw[arrow] (phi3) -- (output);
+
+% ── Brace for Perception Bridge ─────────────────────────────────────────
+\begin{scope}[on background layer]
+    \node[draw=bridgeorange!40, fill=bridgeorange!5, rounded corners=5pt,
+          fit=(tile_emb)(projector)(perceiver), inner sep=8pt,
+          label={[font=\small\sffamily\bfseries, text=bridgeorange!80]above:Perception Bridge ($\sim$50M)}] {};
+\end{scope}
+
+% ── Stage labels ─────────────────────────────────────────────────────────
+\node[font=\tiny\sffamily, color=visionblue, above=0.3cm of siglip]
+    {\textit{Frozen in both stages}};
+\node[font=\tiny\sffamily, color=llmred, above=0.3cm of phi3]
+    {\textit{Frozen in Stage 1; LoRA in Stage 2}};
+
+\end{tikzpicture}
+\caption{\textbf{AgriPerceiver architecture.} An input leaf image is
+tiled into 5 spatial regions, encoded by frozen SigLIP-SO400M, enriched
+with learned tile-position embeddings, projected to the LLM dimension,
+and compressed from 3,645 to 128 tokens by the Perceiver Resampler.
+The compressed latents are spliced into Phi-3-mini's input sequence
+for autoregressive generation of structured diagnostic JSON.}
+\label{fig:architecture}
+\end{figure*}

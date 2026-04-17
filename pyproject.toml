@@ -22,17 +22,19 @@ classifiers = [
 ]
 
 dependencies = [
-    "torch>=2.1.0",
-    "torchvision>=0.16.0",
-    "transformers>=4.40.0",
-    "accelerate>=0.28.0",
+    "torch>=2.1.0,<3.0",
+    "torchvision>=0.16.0,<1.0",
+    "transformers>=4.40.0,<6.0",
+    "accelerate>=0.28.0,<2.0",
     "peft>=0.10.0",
     "opencv-python>=4.8.0",
-    "pydantic>=2.0",
-    "PyYAML>=6.0",
+    "pydantic>=2.0,<3.0",
+    "PyYAML>=6.0,<7.0",
     "tqdm>=4.65.0",
     "Pillow>=10.0.0",
-    "numpy>=1.24.0",
+    "numpy>=1.24.0,<3.0",
+    "safetensors>=0.4.0",
+    "einops>=0.7.0",
 ]
 
 [project.optional-dependencies]

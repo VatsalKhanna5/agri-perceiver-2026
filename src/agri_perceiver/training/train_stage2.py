@@ -49,6 +49,10 @@ def main():
     args = parser.parse_args()
 
     set_seed(args.seed)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+    os.environ["CUBLAS_WORKSPACE_CONFIG"] = ":4096:8"
+
     device = args.device
 
     # Tokenizer
@@ -87,9 +91,12 @@ def main():
     dataset = SpecialistDataset(
         jsonl_path=args.data, tokenizer=tokenizer, data_root=args.data_root,
     )
+    g = torch.Generator()
+    g.manual_seed(args.seed)
     loader = DataLoader(
         dataset, batch_size=args.batch_size, shuffle=True,
         collate_fn=specialist_collate_fn, num_workers=0, pin_memory=True,
+        generator=g,
     )
 
     optimizer = AdamW(model.parameters(), lr=args.lr)

@@ -18,7 +18,7 @@ import torch
 from torch.optim import AdamW
 from torch.utils.data import DataLoader
 from tqdm import tqdm
-from transformers import AutoModel, AutoModelForCausalLM, AutoTokenizer
+from transformers import AutoModel, AutoModelForCausalLM, AutoTokenizer, set_seed
 
 from agri_perceiver.data.alignment_dataset import AlignmentDataset
 from agri_perceiver.data.collate import alignment_collate_fn
@@ -38,8 +38,14 @@ def main():
     parser.add_argument("--epochs", type=int, default=2)
     parser.add_argument("--batch-size", type=int, default=16)
     parser.add_argument("--max-steps", type=int, default=None)
+    parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--device", type=str, default="cuda")
     args = parser.parse_args()
+
+    set_seed(args.seed)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+    os.environ["CUBLAS_WORKSPACE_CONFIG"] = ":4096:8"
 
     device = args.device
 
@@ -55,9 +61,12 @@ def main():
         tokenizer=tokenizer,
         data_root=args.data_root,
     )
+    g = torch.Generator()
+    g.manual_seed(args.seed)
     loader = DataLoader(
         dataset, batch_size=args.batch_size, shuffle=True,
         collate_fn=alignment_collate_fn, num_workers=0, pin_memory=True,
+        generator=g,
     )
 
     # Backbones

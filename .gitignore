@@ -55,3 +55,6 @@ Thumbs.db
 
 # ── Pytest ─────────────────────────────────────────────
 .pytest_cache/
+
+# ── Data splits (generated, large) ────────────────────
+data/
