@@ -1,69 +1,57 @@
-km1/
-workspace/
+# ── Python ──────────────────────────────────────────────
 __pycache__/
-nohup.out
-*.logworkspace/
-km1/
-__pycache__/
-*.pt
-*.ckpt
-*.log
-.env
-logs/
+*.py[cod]
+*$py.class
+*.egg-info/
+*.egg
+dist/
+build/
 
-/configs/
+# ── Virtual Environments ───────────────────────────────
+.venv/
+venv/
+env/
 
-# --- AI/ML Specific ---
+# ── Model Weights & Checkpoints ────────────────────────
+checkpoints/
 model_cache/
-weights/
-*.pth
 *.pt
-*.ckpt
+*.pth
+*.safetensors
 *.bin
 *.onnx
-*.joblib
+*.ckpt
 
-# --- Data & Datasets ---
-data/
-datasets/
-*.csv
+# ── Data (large files tracked externally) ──────────────
 *.jsonl
+*.csv
 *.parquet
 *.npy
 *.npz
 
-# --- Environments & Packages ---
-# Exclude your virtual environments (conda or venv)
-env/
-venv/
-.env/
-anaconda/
-lib/
-bin/
-share/
-include/
-
-# --- Logs & Monitoring ---
-logs/
+# ── Logs ───────────────────────────────────────────────
+docs/logs/
 *.log
-lightning_logs/
-runs/
+nohup.out
 wandb/
-tensorboard/
-.tensorboard/
+runs/
+lightning_logs/
 
-# --- Configs & Secrets ---
-# We keep paths.yaml but ignore actual secret keys if you have them
+# ── Legacy Code (superseded by src/) ──────────────────
+_legacy/
+
+# ── Secrets ────────────────────────────────────────────
 .env
 .secrets
 *.key
 *.pem
 
-# --- Python & System ---
-__pycache__/
-*.py[cod]
-*$py.class
-.DS_Store
-.ipynb_checkpoints/
+# ── IDE / OS ──────────────────────────────────────────
 .vscode/
 .idea/
+.DS_Store
+Thumbs.db
+.ipynb_checkpoints/
+
+# ── Pytest ─────────────────────────────────────────────
+.pytest_cache/

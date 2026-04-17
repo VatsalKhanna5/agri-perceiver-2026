@@ -1,5 +1,0 @@
-data
-inference
-models
-monitoring
-training

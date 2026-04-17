@@ -1,0 +1,20 @@
+# Stage 1 — Alignment pretraining
+training:
+  stage: 1
+  epochs: 2
+  batch_size: 16
+  learning_rate: 1.0e-4
+  optimizer: AdamW
+  max_steps: null
+
+  freeze:
+    vision_encoder: true
+    language_model: true
+
+data:
+  jsonl_path: "data/alignment/generic_alignment.jsonl"
+  data_root: "."
+  image_size: 384
+
+output:
+  checkpoint: "checkpoints/stage1_connector_weights.pt"

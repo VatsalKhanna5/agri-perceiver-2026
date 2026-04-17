@@ -1,0 +1,37 @@
+# Model architecture configuration
+model:
+  vision_encoder: "google/siglip-so400m-patch14-384"
+  language_model: "microsoft/Phi-3-mini-128k-instruct"
+  vision_dim: 1152
+  llm_dim: 3072
+  num_tiles: 5
+  image_size: 384
+
+  perceiver:
+    num_latents: 128
+    num_blocks: 2
+    num_heads: 24
+    head_dim: 128
+    ff_mult: 4
+
+  projector:
+    hidden_dim: null  # defaults to llm_dim
+
+  tile_embeddings:
+    dropout: 0.0
+
+  lora:
+    r: 32
+    alpha: 64
+    target_modules:
+      - qkv_proj
+      - o_proj
+      - gate_up_proj
+      - down_proj
+      - up_proj
+    dropout: 0.1
+
+special_tokens:
+  - "<image>"
+  - "<image_start>"
+  - "<image_end>"

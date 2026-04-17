@@ -1,0 +1,29 @@
+# Evaluation configuration
+evaluation:
+  checkpoint: "checkpoints/specialist_e3.pt"
+  test_images_dir: "data/test_images/"
+  ground_truth: "data/test_ground_truth.jsonl"
+  output_dir: "results/"
+
+  max_new_tokens: 350
+  device: "cuda"
+
+  metrics:
+    - json_validity
+    - schema_compliance
+    - type_f1
+    - diagnosis_accuracy
+    - severity_mae
+    - calibration_ece
+    - symptom_bertscore
+    - reasoning_bertscore
+    - composite_score
+
+  baselines:
+    - gemma3
+    - llava_next
+    - internvl2
+
+  judge:
+    enabled: true
+    num_judges: 3

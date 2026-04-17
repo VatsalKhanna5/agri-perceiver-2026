@@ -1,0 +1,24 @@
+# Stage 2 — Specialist fine-tuning
+training:
+  stage: 2
+  epochs: 3
+  batch_size: 8
+  learning_rate: 1.0e-4
+  optimizer: AdamW
+  gradient_accumulation_steps: 2
+  seed: 42
+
+  freeze:
+    vision_encoder: true
+    language_model: false  # LoRA adapters are trainable
+
+data:
+  jsonl_path: "data/final_train_canonical.jsonl"
+  data_root: "data/processed_images"
+  image_size: 384
+  max_length: 2048
+
+output:
+  checkpoint_template: "checkpoints/specialist_e{epoch}.pt"
+
+bridge_weights: "checkpoints/stage1_connector_weights.pt"
