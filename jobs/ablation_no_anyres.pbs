@@ -1,0 +1,36 @@
+#!/bin/bash
+#PBS -N abl_noanyres
+#PBS -q workq
+#PBS -l select=1:ncpus=8:mem=32gb:ngpus=1
+#PBS -l walltime=24:00:00
+#PBS -o /Data1/ece_23104085/agri-perceiver/logs/ablation_no_anyres.log
+#PBS -j oe
+#PBS -V
+
+echo "=== Ablation: No AnyRes (1 tile) at $(date) ==="
+
+source /apps/compilers/anaconda3/etc/profile.d/conda.sh
+conda activate inference-engine
+
+export HF_HOME=/Data1/ece_23104085/hf_cache
+export CUDA_VISIBLE_DEVICES=MIG-4d38d5cf-c802-5308-80b8-251f3cec7480
+cd /Data1/ece_23104085/agri-perceiver
+
+python scripts/run_ablation.py \
+    --ablation no_anyres \
+    --checkpoint checkpoints/specialist_e3.pt \
+    --test-data data/test_split.jsonl \
+    --image-root /Data1/ece_23104085/canonical_dataset/processed_images \
+    --output results/ablation_no_anyres_predictions.jsonl \
+    --resume
+
+echo "=== Validating ==="
+python scripts/validate_predictions.py results/ablation_no_anyres_predictions.jsonl
+
+echo "=== Running evaluation ==="
+python -m agri_perceiver.evaluation.run_eval \
+    --predictions results/ablation_no_anyres_predictions.jsonl \
+    --ground-truth data/test_split_gt.jsonl \
+    --output results/ablation_no_anyres_eval.json
+
+echo "=== Done at $(date) ==="

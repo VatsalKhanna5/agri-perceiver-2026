@@ -111,7 +111,7 @@ class AgriPredictor:
         llm_name: str = DEFAULT_LLM,
         vision_name: str = DEFAULT_VISION,
         device: str = "cuda",
-        max_new_tokens: int = 350,
+        max_new_tokens: int = 512,
         use_lora: bool = True,
         lora_config: Optional[dict] = None,
     ):
@@ -154,10 +154,17 @@ class AgriPredictor:
             peft_config = LoraConfig(**lora_config)
             self.model.language_model = get_peft_model(self.model.language_model, peft_config)
 
-        # Load weights
-        state_dict = torch.load(checkpoint_path, map_location=self.device, weights_only=True)
-        self.model.load_state_dict(state_dict)
-        self.model.to(torch.bfloat16)
+        # Load weights (to CPU first to avoid GPU OOM during loading)
+        state_dict = torch.load(checkpoint_path, map_location="cpu", weights_only=True)
+        # Remap legacy checkpoint keys (phi3.→language_model., siglip.→vision_encoder.)
+        remapped = {}
+        for k, v in state_dict.items():
+            k_new = k.replace("phi3.", "language_model.", 1) if k.startswith("phi3.") else k
+            k_new = k_new.replace("siglip.", "vision_encoder.", 1) if k_new.startswith("siglip.") else k_new
+            remapped[k_new] = v
+        self.model.load_state_dict(remapped)
+        del state_dict
+        self.model.to(dtype=torch.bfloat16, device=self.device)
         self.model.eval()
 
     @torch.no_grad()

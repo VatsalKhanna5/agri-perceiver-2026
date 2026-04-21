@@ -1,0 +1,22 @@
+#!/bin/bash
+#PBS -N dl_baselines
+#PBS -q workq
+#PBS -l select=1:ncpus=4:mem=32gb
+#PBS -l walltime=04:00:00
+#PBS -o /Data1/ece_23104085/agri-perceiver/logs/download_baselines.log
+#PBS -j oe
+#PBS -V
+
+echo "=== Downloading baseline models at $(date) ==="
+
+source /apps/compilers/anaconda3/etc/profile.d/conda.sh
+conda activate inference-engine
+
+export HF_HOME=/Data1/ece_23104085/hf_cache
+cd /Data1/ece_23104085/agri-perceiver
+
+# Download LLaVA-NeXT first (smallest), then InternVL2, then Gemma
+python scripts/download_baselines.py llava_next internvl2 gemma3
+
+echo "=== Download complete at $(date) ==="
+du -sh $HF_HOME

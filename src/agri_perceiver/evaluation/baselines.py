@@ -54,7 +54,7 @@ class GemmaBaseline(BaselineModel):
         from PIL import Image
         image = Image.open(image_path).convert("RGB")
         inputs = self.processor(text=prompt, images=image, return_tensors="pt").to(self.device)
-        outputs = self.model.generate(**inputs, max_new_tokens=400)
+        outputs = self.model.generate(**inputs, max_new_tokens=512)
         return self.processor.decode(outputs[0], skip_special_tokens=True)
 
 
@@ -81,7 +81,7 @@ class LLaVANextBaseline(BaselineModel):
         conversation = [{"role": "user", "content": [{"type": "image"}, {"type": "text", "text": prompt}]}]
         text = self.processor.apply_chat_template(conversation, add_generation_prompt=True)
         inputs = self.processor(text=text, images=image, return_tensors="pt").to(self.device)
-        outputs = self.model.generate(**inputs, max_new_tokens=400)
+        outputs = self.model.generate(**inputs, max_new_tokens=512)
         return self.processor.decode(outputs[0], skip_special_tokens=True)
 
 
@@ -111,7 +111,7 @@ class InternVL2Baseline(BaselineModel):
         image = Image.open(image_path).convert("RGB")
         pixel_values = self._preprocess(image).unsqueeze(0).to(self.device)
 
-        generation_config = {"max_new_tokens": 400, "do_sample": False}
+        generation_config = {"max_new_tokens": 512, "do_sample": False}
         response = self.model.chat(self.tokenizer, pixel_values, prompt, generation_config)
         return response
 

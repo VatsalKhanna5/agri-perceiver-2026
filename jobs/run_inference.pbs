@@ -1,0 +1,52 @@
+#!/bin/bash
+#PBS -N agri_infer
+#PBS -q workq
+#PBS -l select=1:ncpus=8:mem=32gb:ngpus=1
+#PBS -l walltime=24:00:00
+#PBS -o /Data1/ece_23104085/agri-perceiver/logs/inference.log
+#PBS -j oe
+#PBS -V
+
+echo "=== AgriPerceiver Inference Job Started at $(date) ==="
+echo "Job ID: $PBS_JOBID"
+echo "Node: $(hostname)"
+echo "CUDA_VISIBLE_DEVICES: $CUDA_VISIBLE_DEVICES"
+echo "Python: $(python --version 2>&1)"
+nvidia-smi -L 2>/dev/null
+
+source /apps/compilers/anaconda3/etc/profile.d/conda.sh
+conda activate inference-engine
+
+export HF_HOME=/Data1/ece_23104085/hf_cache
+export CUDA_VISIBLE_DEVICES=MIG-4d38d5cf-c802-5308-80b8-251f3cec7480
+
+cd /Data1/ece_23104085/agri-perceiver
+
+# Convert GT format
+python scripts/convert_gt.py data/test_split.jsonl data/test_split_gt.jsonl
+
+echo "=== Starting inference at $(date) ==="
+python scripts/run_inference.py \
+    --checkpoint checkpoints/specialist_e3.pt \
+    --test-data data/test_split.jsonl \
+    --image-root /Data1/ece_23104085/canonical_dataset/processed_images \
+    --output results/predictions.jsonl \
+    --resume
+
+INFER_EXIT=$?
+echo "=== Inference finished at $(date) with exit code: $INFER_EXIT ==="
+
+# Validate predictions
+echo "=== Validating predictions ==="
+python scripts/validate_predictions.py results/predictions.jsonl
+
+if [ $INFER_EXIT -eq 0 ]; then
+    echo "=== Running evaluation ==="
+    python -m agri_perceiver.evaluation.run_eval \
+        --predictions results/predictions.jsonl \
+        --ground-truth data/test_split_gt.jsonl \
+        --output results/eval_results.json
+    echo "=== Evaluation complete ==="
+fi
+
+echo "=== Job finished at $(date) ==="
