@@ -1,0 +1,183 @@
+{
+  "n_samples": 5062,
+  "structural": {
+    "json_validity": 0.9966416436191229,
+    "schema_compliance": 0.9966416436191229
+  },
+  "classification": {
+    "type": {
+      "macro_f1": 0.6453078298082024,
+      "micro_f1": 0.7153299091268274,
+      "weighted_f1": 0.7188710829150444,
+      "per_class": {
+        "bacterial": {
+          "precision": 0.6070826306913997,
+          "recall": 0.5202312138728323,
+          "f1-score": 0.5603112840466926,
+          "support": 692.0
+        },
+        "deficiency": {
+          "precision": 0.528415961305925,
+          "recall": 0.7071197411003236,
+          "f1-score": 0.6048442906574395,
+          "support": 618.0
+        },
+        "fungal": {
+          "precision": 0.7903225806451613,
+          "recall": 0.8376068376068376,
+          "f1-score": 0.8132780082987552,
+          "support": 1521.0
+        },
+        "pest": {
+          "precision": 0.5087719298245614,
+          "recall": 0.5783475783475783,
+          "f1-score": 0.5413333333333333,
+          "support": 351.0
+        },
+        "unknown": {
+          "precision": 0.9080280592361653,
+          "recall": 0.758957654723127,
+          "f1-score": 0.8268275372604684,
+          "support": 1535.0
+        },
+        "viral": {
+          "precision": 0.5229885057471264,
+          "recall": 0.527536231884058,
+          "f1-score": 0.5252525252525253,
+          "support": 345.0
+        },
+        "accuracy": 0.7153299091268274,
+        "macro avg": {
+          "precision": 0.6442682779083898,
+          "recall": 0.6549665429224595,
+          "f1-score": 0.6453078298082024,
+          "support": 5062.0
+        },
+        "weighted avg": {
+          "precision": 0.7312477168047202,
+          "recall": 0.7153299091268274,
+          "f1-score": 0.7188710829150444,
+          "support": 5062.0
+        }
+      },
+      "confusion_matrix": [
+        [
+          360,
+          79,
+          145,
+          56,
+          15,
+          37
+        ],
+        [
+          22,
+          437,
+          25,
+          16,
+          62,
+          56
+        ],
+        [
+          121,
+          32,
+          1274,
+          52,
+          18,
+          24
+        ],
+        [
+          32,
+          9,
+          80,
+          203,
+          20,
+          7
+        ],
+        [
+          30,
+          169,
+          61,
+          68,
+          1165,
+          42
+        ],
+        [
+          28,
+          101,
+          27,
+          4,
+          3,
+          182
+        ]
+      ]
+    },
+    "diagnosis": {
+      "exact_match": 0.430462267878309,
+      "fuzzy_match": 0.48617147372580005,
+      "mean_similarity": 0.5373045693125056
+    }
+  },
+  "regression": {
+    "severity": {
+      "mae": 0.06691031212959303,
+      "rmse": 0.12496147173910002,
+      "pearson_r": 0.8549324233232858
+    }
+  },
+  "calibration": {
+    "ece": 0.13914460687475305,
+    "bins": [
+      {
+        "bin": "0.4-0.5",
+        "count": 17,
+        "avg_conf": 0.5,
+        "avg_acc": 0.11764705882352941
+      },
+      {
+        "bin": "0.6-0.7",
+        "count": 792,
+        "avg_conf": 0.7,
+        "avg_acc": 0.5517676767676768
+      },
+      {
+        "bin": "0.7-0.8",
+        "count": 1354,
+        "avg_conf": 0.7967872968980797,
+        "avg_acc": 0.5709010339734121
+      },
+      {
+        "bin": "0.8-0.9",
+        "count": 1405,
+        "avg_conf": 0.865729537366548,
+        "avg_acc": 0.7444839857651245
+      },
+      {
+        "bin": "0.9-1.0",
+        "count": 1494,
+        "avg_conf": 0.982095046854083,
+        "avg_acc": 0.9123159303882196
+      }
+    ]
+  },
+  "semantic": {
+    "symptoms": {
+      "error": "bert_score not installed. Install with: pip install bert-score"
+    },
+    "reasoning": {
+      "error": "bert_score not installed"
+    }
+  },
+  "composite_score": 0.487835272006682,
+  "flat_metrics": {
+    "type_macro_f1": 0.6453078298082024,
+    "diagnosis_fuzzy_match": 0.48617147372580005,
+    "severity_mae": 0.06691031212959303,
+    "json_validity": 0.9966416436191229,
+    "schema_compliance": 0.9966416436191229,
+    "symptom_bertscore_f1": 0.0,
+    "reasoning_bertscore_f1": 0.0,
+    "ece": 0.13914460687475305,
+    "action_bertscore_f1": 0.0
+  },
+  "timestamp": "2026-04-21 15:01:25"
+}

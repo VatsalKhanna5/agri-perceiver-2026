@@ -33,29 +33,41 @@ BASELINE_PROMPT = (
 )
 
 
-class GemmaBaseline(BaselineModel):
-    """Google Gemma-3 baseline via transformers."""
+class Qwen2VLBaseline(BaselineModel):
+    """Qwen2-VL-7B-Instruct baseline — strong open VLM, non-gated, 7B params."""
 
-    name = "Gemma-3-12B"
+    name = "Qwen2-VL-7B"
 
-    def __init__(self, model_name: str = "google/gemma-3-12b-it", device: str = "cuda"):
+    def __init__(self, model_name: str = "Qwen/Qwen2-VL-7B-Instruct", device: str = "cuda"):
         import torch
-        from transformers import AutoModelForCausalLM, AutoTokenizer, AutoProcessor
+        from transformers import Qwen2VLForConditionalGeneration, AutoProcessor
 
         self.device = device
         self.processor = AutoProcessor.from_pretrained(model_name)
-        self.model = AutoModelForCausalLM.from_pretrained(
+        self.model = Qwen2VLForConditionalGeneration.from_pretrained(
             model_name,
             torch_dtype=torch.bfloat16,
             device_map=device,
         )
+        self.model.eval()
 
     def predict(self, image_path: str, prompt: str = BASELINE_PROMPT) -> str:
+        import torch
         from PIL import Image
+
         image = Image.open(image_path).convert("RGB")
-        inputs = self.processor(text=prompt, images=image, return_tensors="pt").to(self.device)
-        outputs = self.model.generate(**inputs, max_new_tokens=512)
-        return self.processor.decode(outputs[0], skip_special_tokens=True)
+        messages = [
+            {"role": "user", "content": [
+                {"type": "image", "image": image_path},
+                {"type": "text", "text": prompt},
+            ]}
+        ]
+        text = self.processor.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+        inputs = self.processor(text=[text], images=[image], return_tensors="pt").to(self.device)
+        with torch.no_grad():
+            outputs = self.model.generate(**inputs, max_new_tokens=512)
+        generated = outputs[:, inputs["input_ids"].shape[1]:]
+        return self.processor.batch_decode(generated, skip_special_tokens=True)[0]
 
 
 class LLaVANextBaseline(BaselineModel):
@@ -129,7 +141,7 @@ class InternVL2Baseline(BaselineModel):
 
 # Registry for easy access
 BASELINES = {
-    "gemma3": GemmaBaseline,
+    "qwen2vl": Qwen2VLBaseline,
     "llava_next": LLaVANextBaseline,
     "internvl2": InternVL2Baseline,
 }

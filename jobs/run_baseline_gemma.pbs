@@ -1,13 +1,13 @@
 #!/bin/bash
-#PBS -N bl_gemma
+#PBS -N bl_qwen2vl
 #PBS -q workq
 #PBS -l select=1:ncpus=8:mem=32gb:ngpus=1
 #PBS -l walltime=48:00:00
-#PBS -o /Data1/ece_23104085/agri-perceiver/logs/baseline_gemma.log
+#PBS -o /Data1/ece_23104085/agri-perceiver/logs/baseline_qwen2vl.log
 #PBS -j oe
 #PBS -V
 
-echo "=== Gemma-3-12B-IT Baseline at $(date) ==="
+echo "=== Qwen2-VL-7B-Instruct Baseline at $(date) ==="
 
 source /apps/compilers/anaconda3/etc/profile.d/conda.sh
 conda activate inference-engine
@@ -17,19 +17,19 @@ export CUDA_VISIBLE_DEVICES=MIG-4d38d5cf-c802-5308-80b8-251f3cec7480
 cd /Data1/ece_23104085/agri-perceiver
 
 python scripts/run_baseline_inference.py \
-    --model gemma3 \
+    --model qwen2vl \
     --test-data data/test_split.jsonl \
     --image-root /Data1/ece_23104085/canonical_dataset/processed_images \
-    --output results/gemma3_predictions.jsonl \
+    --output results/qwen2vl_predictions.jsonl \
     --resume
 
 echo "=== Validating ==="
-python scripts/validate_predictions.py results/gemma3_predictions.jsonl
+python scripts/validate_predictions.py results/qwen2vl_predictions.jsonl
 
 echo "=== Running evaluation ==="
 python -m agri_perceiver.evaluation.run_eval \
-    --predictions results/gemma3_predictions.jsonl \
+    --predictions results/qwen2vl_predictions.jsonl \
     --ground-truth data/test_split_gt.jsonl \
-    --output results/gemma3_eval_results.json
+    --output results/qwen2vl_eval_results.json
 
-echo "=== Gemma done at $(date) ==="
+echo "=== Qwen2-VL done at $(date) ==="
