@@ -49,7 +49,7 @@ class AblationPredictor:
         if ablation == "no_tile_embed":
             # Zero out the learned spatial tile embeddings
             with torch.no_grad():
-                self.predictor.model.tile_embed.tile_embedding.weight.zero_()
+                self.predictor.model.tile_embed.tile_embeddings.zero_()
             print("[ABLATION] Zeroed tile_embed weights")
 
     def predict(self, image_path: str) -> str:
@@ -57,11 +57,11 @@ class AblationPredictor:
         img = load_image(image_path)
 
         if self.ablation == "no_anyres":
-            # Single center-crop instead of 5-tile AnyRes
-            h, w = img.shape[:2]
+            # Single global tile duplicated across 5 slots to preserve
+            # architecture expectations while removing AnyRes diversity.
             resized = cv2.resize(img, (384, 384))
             t = torch.from_numpy(resized).permute(2, 0, 1).float() / 255.0
-            pixel_values = t.unsqueeze(0).unsqueeze(0)  # [1, 1, 3, 384, 384]
+            pixel_values = t.unsqueeze(0).repeat(5, 1, 1, 1).unsqueeze(0)  # [1, 5, 3, 384, 384]
             pixel_values = pixel_values.to(
                 self.predictor.device, dtype=torch.bfloat16
             )

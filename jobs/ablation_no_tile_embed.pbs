@@ -21,8 +21,7 @@ python scripts/run_ablation.py \
     --checkpoint checkpoints/specialist_e3.pt \
     --test-data data/test_split.jsonl \
     --image-root /Data1/ece_23104085/canonical_dataset/processed_images \
-    --output results/ablation_no_tile_embed_predictions.jsonl \
-    --resume
+    --output results/ablation_no_tile_embed_predictions.jsonl
 
 echo "=== Validating ==="
 python scripts/validate_predictions.py results/ablation_no_tile_embed_predictions.jsonl
