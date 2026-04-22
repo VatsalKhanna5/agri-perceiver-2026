@@ -108,14 +108,21 @@ class InternVL2Baseline(BaselineModel):
 
         self.device = device
         self.tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True)
-        # Do NOT use device_map= here: accelerate's dispatch wraps InternLM2ForCausalLM
-        # in a way that strips the custom .generate() method.  Load on CPU then move.
         self.model = AutoModel.from_pretrained(
             model_name,
             torch_dtype=torch.bfloat16,
             low_cpu_mem_usage=True,
             trust_remote_code=True,
         ).eval().to(device)
+
+        # Fix for transformers >= 4.50: GenerationMixin was decoupled from PreTrainedModel.
+        # InternLM2ForCausalLM in the cached trust_remote_code relies on the old inheritance
+        # where PreTrainedModel included GenerationMixin. Inject it back into the class MRO
+        # so that language_model.generate() is available for InternVLChatModel.chat().
+        from transformers.generation.utils import GenerationMixin
+        lm_class = type(self.model.language_model)
+        if not isinstance(self.model.language_model, GenerationMixin):
+            lm_class.__bases__ = lm_class.__bases__ + (GenerationMixin,)
 
     def predict(self, image_path: str, prompt: str = BASELINE_PROMPT) -> str:
         from PIL import Image
