@@ -12,8 +12,8 @@
 [![arXiv](https://img.shields.io/badge/arXiv-Coming%20Soon-B31B1B?style=flat-square&logo=arxiv&logoColor=white)](#)
 [![Workshop](https://img.shields.io/badge/FM4LS%20Workshop-ICML%202026-4B8BBE?style=flat-square)](https://icml2026fm4ls.github.io/index.html)
 [![ICML 2026](https://img.shields.io/badge/ICML-2026%20Seoul-0066CC?style=flat-square)](https://icml.cc/)
-[![HuggingFace Model](https://img.shields.io/badge/HuggingFace-Model%20Coming%20Soon-FFD21E?style=flat-square&logo=huggingface&logoColor=black)](#)
-[![HuggingFace Dataset](https://img.shields.io/badge/HuggingFace-Dataset%20Coming%20Soon-FFD21E?style=flat-square&logo=huggingface&logoColor=black)](#)
+[![HuggingFace Model](https://img.shields.io/badge/HuggingFace-Model%20Coming%20Soon-FF9D00?style=flat-square&logo=huggingface&logoColor=white)](#)
+[![HuggingFace Dataset](https://img.shields.io/badge/HuggingFace-Dataset%20Coming%20Soon-FF9D00?style=flat-square&logo=huggingface&logoColor=white)](#)
 [![License](https://img.shields.io/badge/License-Apache%202.0-green?style=flat-square)](LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
 
@@ -150,9 +150,9 @@ pip install -e ".[eval,train,dev]"
 
 | Artifact | Status | Link |
 |---|---|---|
-| `agri-perceiver/specialist-e3` — Stage-2 fine-tuned weights | Coming soon | [![HuggingFace](https://img.shields.io/badge/HuggingFace-Coming%20Soon-FFD21E?style=flat-square&logo=huggingface&logoColor=black)](#) |
-| `agri-perceiver/stage1-bridge` — Stage-1 connector weights | Coming soon | [![HuggingFace](https://img.shields.io/badge/HuggingFace-Coming%20Soon-FFD21E?style=flat-square&logo=huggingface&logoColor=black)](#) |
-| `agri-perceiver/canonical-dataset` — 101K training samples | Coming soon | [![HuggingFace](https://img.shields.io/badge/HuggingFace-Coming%20Soon-FFD21E?style=flat-square&logo=huggingface&logoColor=black)](#) |
+| `agri-perceiver/specialist-e3` — Stage-2 fine-tuned weights | Coming soon | [![HuggingFace](https://img.shields.io/badge/HuggingFace-Coming%20Soon-FF9D00?style=flat-square&logo=huggingface&logoColor=white)](#) |
+| `agri-perceiver/stage1-bridge` — Stage-1 connector weights | Coming soon | [![HuggingFace](https://img.shields.io/badge/HuggingFace-Coming%20Soon-FF9D00?style=flat-square&logo=huggingface&logoColor=white)](#) |
+| `agri-perceiver/canonical-dataset` — 101K training samples | Coming soon | [![HuggingFace](https://img.shields.io/badge/HuggingFace-Coming%20Soon-FF9D00?style=flat-square&logo=huggingface&logoColor=white)](#) |
 
 ---
 
@@ -344,6 +344,14 @@ The workshop brings together researchers at the intersection of multi-modal lear
 | ICML 2026 | [icml.cc](https://icml.cc/) |
 | Venue | COEX Convention & Exhibition Center, Room S317, Seoul, South Korea |
 | Workshop date | July 11, 2026, 08:00–17:00 KST |
+
+---
+
+## Acknowledgements
+
+This work was carried out under the guidance of **Dr. Roshan Bodile** and **Dr. Rohit Singh** (Department of Electronics and Communication Engineering, Dr. B. R. Ambedkar National Institute of Technology Jalandhar), whose sustained mentorship shaped both the research direction and the technical rigor of this project.
+
+Logistical support, domain expertise, and computational infrastructure were provided by **[Annam.ai](https://annam.ai)** — an AI Centre of Excellence in Agriculture established at the Indian Institute of Technology Ropar, under the leadership of **Dr. Pushpendra Pal Singh** (Project Director). The H200 GPU compute on which all training and evaluation runs were conducted was made available through Annam.ai. This work aims to contribute to the broader mission of Annam.ai in advancing AI-driven solutions for Indian and global agriculture.
 
 ---
 
