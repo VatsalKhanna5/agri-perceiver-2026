@@ -19,7 +19,7 @@
 
 ---
 
-**[Vatsal Khanna](https://github.com/VatsalKhanna5)**
+**[Vatsal Khanna](https://github.com/VatsalKhanna5)**   \&  **[Davinder Singh](https://github.com/Davinder1436)**
 
 </div>
 
