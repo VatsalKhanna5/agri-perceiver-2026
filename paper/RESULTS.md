@@ -7,7 +7,6 @@
 
 **Test set:** 5,062 samples, `data/test_split_gt.jsonl`
 **Eval script:** `python -m agri_perceiver.evaluation.run_eval`
-**HPC:** `ece_23104085@10.10.11.201`, base path `/Data1/ece_23104085/agri-perceiver/`
 **Conda env:** `inference-engine` (Python 3.10, transformers 4.55.2)
 **Last updated:** 2026-04-22
 
