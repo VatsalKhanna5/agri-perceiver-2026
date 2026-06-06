@@ -1,25 +1,27 @@
 <div align="center">
 
+<img src="assets/banner.png" alt="AgriPerceiver" style="border-radius: 14px; width: 100%; max-width: 960px;" />
+
 # AgriPerceiver
 
 ### A Perceiver-Resampler Vision-Language Model for Structured Agricultural Pathology Diagnosis
 
 *Accepted — ICML 2026, 3rd Workshop on Multi-modal Foundation Models and Large Language Models for Life Sciences*
 
----
+<br/>
 
-[![Paper](https://img.shields.io/badge/Paper-OpenReview-B31B1B?style=flat-square&logo=openreview&logoColor=white)](https://openreview.net/group?id=ICML.cc/2026/Workshop/FM4LS)
-[![arXiv](https://img.shields.io/badge/arXiv-Coming%20Soon-B31B1B?style=flat-square&logo=arxiv&logoColor=white)](#)
-[![Workshop](https://img.shields.io/badge/FM4LS%20Workshop-ICML%202026-4B8BBE?style=flat-square)](https://icml2026fm4ls.github.io/index.html)
-[![ICML 2026](https://img.shields.io/badge/ICML-2026%20Seoul-0066CC?style=flat-square)](https://icml.cc/)
-[![HuggingFace Model](https://img.shields.io/badge/HuggingFace-Model%20Coming%20Soon-FF9D00?style=flat-square&logo=huggingface&logoColor=white)](#)
-[![HuggingFace Dataset](https://img.shields.io/badge/HuggingFace-Dataset%20Coming%20Soon-FF9D00?style=flat-square&logo=huggingface&logoColor=white)](#)
-[![License](https://img.shields.io/badge/License-Apache%202.0-green?style=flat-square)](LICENSE)
-[![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
+[![Paper](https://img.shields.io/badge/Paper-OpenReview-b31b1b.svg)](https://openreview.net/group?id=ICML.cc/2026/Workshop/FM4LS)
+[![arXiv](https://img.shields.io/badge/arXiv-Coming%20Soon-b31b1b.svg)](#)
+[![Workshop](https://img.shields.io/badge/FM4LS%20Workshop-ICML%202026-4b8bbe.svg)](https://icml2026fm4ls.github.io/index.html)
+[![ICML 2026](https://img.shields.io/badge/ICML-2026%20Seoul-0066cc.svg)](https://icml.cc/)
+[![🤗 Model](https://img.shields.io/badge/%F0%9F%A4%97%20Model-Coming%20Soon-yellow.svg)](#)
+[![🤗 Dataset](https://img.shields.io/badge/%F0%9F%A4%97%20Dataset-Coming%20Soon-yellow.svg)](#)
+[![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
 
----
+<br/>
 
-**[Vatsal Khanna](https://github.com/VatsalKhanna5)**   \&  **[Davinder Singh](https://github.com/Davinder1436)**
+**[Vatsal Khanna](https://github.com/VatsalKhanna5)**  &nbsp;&amp;&nbsp;  **[Davinder Singh](https://github.com/Davinder1436)**
 
 </div>
 
