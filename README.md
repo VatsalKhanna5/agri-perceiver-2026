@@ -10,7 +10,7 @@
 
 <br/>
 
-[![Paper](https://img.shields.io/badge/Paper-OpenReview-b31b1b.svg)](https://openreview.net/group?id=ICML.cc/2026/Workshop/FM4LS)
+[![Paper](https://img.shields.io/badge/Paper-OpenReview-b31b1b.svg)](https://icml.cc/virtual/2026/72095)
 [![arXiv](https://img.shields.io/badge/arXiv-Coming%20Soon-b31b1b.svg)](#)
 [![Workshop](https://img.shields.io/badge/FM4LS%20Workshop-ICML%202026-4b8bbe.svg)](https://icml2026fm4ls.github.io/index.html)
 [![ICML 2026](https://img.shields.io/badge/ICML-2026%20Seoul-0066cc.svg)](https://icml.cc/)
