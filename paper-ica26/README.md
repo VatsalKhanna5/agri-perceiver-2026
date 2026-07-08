@@ -13,7 +13,14 @@ removed.
 | `llncs.cls` | Springer LNCS document class (v2.24) — CCIS uses the same class. |
 | `splncs04.bst` | Springer LNCS BibTeX style. |
 | `figures/architecture.pdf` | System architecture diagram (vector PDF). |
+| `figures/perclass_f1.pdf` | Per-class pathology-type F1, all four models. |
+| `figures/confusion.pdf` | Row-normalised confusion matrix (ours). |
+| `figures/calibration.pdf` | Reliability diagram (ours). |
+| `figures/flops.pdf` | Attention-FLOP scaling: full self-attn vs Perceiver. |
 | `figures/training_curves.pdf` | Stage-1 / Stage-2 training loss curves. |
+
+All plot figures are regenerated from the real evaluation output
+(`results/eval_results.json`) by `scripts/make_figs.py` in the repo root.
 
 ## Building on Overleaf
 1. Create a new project → **Upload Project** → zip and upload this whole folder.
