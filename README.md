@@ -363,12 +363,9 @@ If you use AgriPerceiver in your research, please cite:
 
 ```bibtex
 @inproceedings{khanna2026agriperceiver,
-  title     = {AgriPerceiver: A Perceiver-Resampler Vision-Language Model for Structured Agricultural Pathology Diagnosis},
-  author    = {Khanna, Vatsal},
-  booktitle = {ICML 2026 Workshop on Multi-modal Foundation Models and Large Language Models for Life Sciences (FM4LS)},
-  year      = {2026},
-  address   = {Seoul, South Korea},
-  url       = {https://icml2026fm4ls.github.io/index.html}
+  title={AgriPerceiver: A Parameter-Efficient Vision-Language Model for Structured Macroscopic Crop Phenotyping},
+  author={Khanna, Vatsal and Singh, Davinder},
+  booktitle={ICML 2026 3rd Workshop on Multi-modal Foundation Models and Large Language Models for Life Sciences}
 }
 ```
 
