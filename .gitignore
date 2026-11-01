@@ -37,9 +37,6 @@ wandb/
 runs/
 lightning_logs/
 
-# ── Legacy Code (superseded by src/) ──────────────────
-_legacy/
-
 # ── Secrets ────────────────────────────────────────────
 .env
 .secrets
@@ -60,3 +57,15 @@ Thumbs.db
 data/
 
 paper-spr/
+
+# ── LaTeX build artefacts (main.bbl is kept: Springer needs it) ──
+*.aux
+*.blg
+*.out
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.toc
+
+# ── Node ──────────────────────────────────────────────
+node_modules/
