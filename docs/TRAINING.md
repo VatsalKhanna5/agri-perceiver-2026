@@ -15,6 +15,10 @@ AgriPerceiver follows the established VLM two-stage curriculum:
 | **LR** | 1e-4 | 1e-4 |
 | **Batch size** | 16 | 8 (effective 16 with grad accum 2) |
 
+The training scripts take their hyperparameters as command-line flags. The defaults match the
+table above and the paper. [configs/](../configs/) records the same settings in YAML for
+reference, but the scripts do not read it. Results are in [RESULTS.md](RESULTS.md#6-training-summary).
+
 ## Stage 1 — Alignment
 
 Trains the perception bridge (TileEmbeddings → VisionProjector → PerceiverResampler) to project visual features into the LLM's token space. Both backbones are frozen.

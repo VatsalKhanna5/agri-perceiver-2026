@@ -2,6 +2,8 @@
 
 ## Overview
 
+Results for every metric below are in [RESULTS.md](RESULTS.md).
+
 AgriPerceiver's evaluation framework measures model quality across **structural validity**, **classification accuracy**, **regression quality**, **semantic similarity**, **calibration**, and **expert-level judgment** — reflecting the multi-dimensional nature of structured diagnostic output.
 
 ## Metric Suite
@@ -45,7 +47,7 @@ AgriPerceiver's evaluation framework measures model quality across **structural 
 
 ### 6. Composite Score
 
-Weighted combination of all metrics (higher = better):
+Weighted combination of all metrics (higher = better). The full formula and a robustness check against reweighting are in [RESULTS.md](RESULTS.md#4-composite-score-and-robustness).
 
 | Component | Weight |
 |-----------|--------|
@@ -61,15 +63,15 @@ Weighted combination of all metrics (higher = better):
 
 ## Baseline Comparisons
 
-Three baselines with comparable or larger parameter counts:
+Three general-purpose baselines with larger parameter counts, implemented in [baselines.py](../src/agri_perceiver/evaluation/baselines.py):
 
-| Model | Parameters | Type |
-|-------|------------|------|
-| **Gemma-3-12B-IT** | 12B | General-purpose multimodal |
-| **LLaVA-NeXT-7B** | 7B | General VLM (Mistral backbone) |
-| **InternVL2-8B** | 8B | General VLM |
+| Model | Key | HuggingFace ID | Parameters |
+|-------|-----|----------------|------------|
+| **LLaVA-NeXT-7B** | `llava_next` | `llava-hf/llava-v1.6-mistral-7b-hf` | 7B |
+| **InternVL2-8B** | `internvl2` | `OpenGVLab/InternVL2-8B` | 8B |
+| **Qwen2-VL-7B** | `qwen2vl` | `Qwen/Qwen2-VL-7B-Instruct` | 7B |
 
-All baselines receive the same prompt requesting structured JSON output. This tests whether a lightweight domain-specialist (AgriPerceiver, ~4.3B total) can outperform larger general-purpose models on agricultural pathology.
+Qwen2-VL-7B replaced the originally planned Gemma-3-12B-IT, which is gated; Qwen2-VL is non-gated and of comparable scale. All baselines receive the same prompt asking for structured JSON output and are not fine-tuned. The comparison tests whether a lightweight domain specialist (AgriPerceiver, 4.6B total, 9.2% trained) can beat larger general-purpose models on agricultural pathology.
 
 ## LLM-as-Judge Evaluation
 
@@ -85,20 +87,50 @@ Inter-judge agreement is measured via score variance across judges.
 
 ## Running Evaluation
 
+Install the `eval` extra first (`pip install -e ".[eval]"`). Without `bert-score`, the
+BERTScore terms silently come out as 0.
+
+### 1. Batch inference
+
 ```bash
-# Full evaluation with metrics
-agri-eval --predictions preds.jsonl --ground-truth gt.jsonl --output results.json
+python scripts/experiments/run_inference.py     --checkpoint checkpoints/specialist_e3.pt     --test-data data/test_split.jsonl     --image-root /path/to/processed_images     --output results/predictions.jsonl            # add --resume to continue, --max-samples N to smoke-test
 
-# Single image inference
-agri-predict --image leaf.jpg --checkpoint checkpoints/specialist_e3.pt
+python scripts/experiments/validate_predictions.py results/predictions.jsonl   # quick sanity report
 ```
 
-### Predictions JSONL format
+### 2. Score
+
+```bash
+python scripts/experiments/convert_gt.py data/test_split.jsonl data/test_split_gt.jsonl
+agri-eval     --predictions results/predictions.jsonl     --ground-truth data/test_split_gt.jsonl     --output results/eval_results.json
+```
+
+### 3. Baselines and ablations
+
+```bash
+python scripts/experiments/download_baselines.py qwen2vl internvl2 llava_next
+python scripts/experiments/run_baseline_inference.py --model qwen2vl     --test-data data/test_split.jsonl --image-root /path/to/processed_images     --output results/qwen2vl_predictions.jsonl
+
+python scripts/experiments/run_ablation.py --ablation no_anyres     --checkpoint checkpoints/specialist_e3.pt     --test-data data/test_split.jsonl --image-root /path/to/processed_images     --output results/ablation_no_anyres_predictions.jsonl
+```
+
+InternVL2-8B needs [patch_internlm2.py](../scripts/experiments/patch_internlm2.py) with
+transformers ≥ 4.50. Score each predictions file with `agri-eval` as in step 2.
+
+### On the cluster
+
+[jobs/](../jobs/) has a PBS script for each run above: `run_inference.pbs`,
+`test10_inference.pbs` (10-sample smoke test), `run_baseline_{llava,internvl,qwen2vl}.pbs` and
+`ablation_no_{anyres,lora,tile_embed}.pbs`. The cluster paths in them are site-specific.
+
+### File formats
+
+Predictions JSONL:
 ```json
-{"image_path": "test_images/leaf_001.jpg", "output": "{\"diagnosis\": ...}"}
+{"image_path": "test_images/leaf_001.jpg", "output": "{\"diagnosis\": ...}", "inference_time_s": 1.23}
 ```
 
-### Ground Truth JSONL format
+Ground-truth JSONL:
 ```json
 {"image_path": "test_images/leaf_001.jpg", "report": {"diagnosis": "...", "type": "...", ...}}
 ```

@@ -1,7 +1,7 @@
 """
 Baseline model runners for comparative evaluation.
 
-Wraps Gemma-3, LLaVA-NeXT, and InternVL2 behind a uniform interface.
+Wraps Qwen2-VL, LLaVA-NeXT, and InternVL2 behind a uniform interface.
 Each baseline takes an image path and returns a JSON diagnostic string.
 """
 

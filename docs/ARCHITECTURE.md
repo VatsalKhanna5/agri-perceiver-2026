@@ -46,6 +46,7 @@ The model follows the established two-stage VLM training paradigm (pioneered by 
 | **Efficient visual compression** | Perceiver Resampler compresses 3,645 visual tokens → 128 latents |
 | **Domain specialization** | Two-stage curriculum: alignment → agricultural fine-tuning |
 | **Structured output** | Model trained to produce JSON-formatted pathology reports |
+| **Backbone-agnostic bridge** | The bridge only depends on the encoder and LLM widths (1152 → 3072), so either backbone can be swapped without architectural changes |
 | **Parameter efficiency** | Frozen backbones; only the bridge and Stage-2 LoRA adapters train (~426M, 9.2% of params) |
 
 ### Backbone Components
@@ -759,7 +760,7 @@ src/agri_perceiver/
 └── evaluation/                   # Metrics, baselines, LLM judge, agri-eval CLI
 ```
 
-The full repository layout is in the [README](../README.md#repository-structure).
+The full repository layout is in the [repository map](README.md#repository-map).
 
 ---
 
