@@ -1,4 +1,17 @@
-fp = '/Data1/ece_23104085/hf_cache/modules/transformers_modules/OpenGVLab/InternVL2-8B/6fb9ad6924f69424e57fab2ab061d707688f0296/modeling_internlm2.py'
+"""Patch the cached InternVL2-8B remote code for transformers >= 4.50.
+
+InternLM2ForCausalLM no longer inherits generate() from PreTrainedModel, and
+DynamicCache replaced tuple caches. This adds the GenerationMixin base and
+makes the past-length lookups cache-agnostic. Idempotent.
+
+Usage:
+    python scripts/experiments/patch_internlm2.py [PATH_TO_modeling_internlm2.py]
+"""
+import sys
+
+DEFAULT = ("/Data1/ece_23104085/hf_cache/modules/transformers_modules/OpenGVLab/InternVL2-8B/"
+           "6fb9ad6924f69424e57fab2ab061d707688f0296/modeling_internlm2.py")
+fp = sys.argv[1] if len(sys.argv) > 1 else DEFAULT
 c = open(fp).read()
 changed = []
 

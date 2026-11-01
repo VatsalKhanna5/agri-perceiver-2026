@@ -17,7 +17,7 @@ import time
 import traceback
 from pathlib import Path
 
-os.environ["HF_HOME"] = os.path.expanduser("~/hf_cache")
+os.environ.setdefault("HF_HOME", os.path.expanduser("~/hf_cache"))
 
 import torch
 import numpy as np

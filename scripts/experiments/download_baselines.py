@@ -4,7 +4,7 @@ import os
 import subprocess
 import sys
 
-os.environ["HF_HOME"] = os.path.expanduser("~/hf_cache")
+os.environ.setdefault("HF_HOME", os.path.expanduser("~/hf_cache"))
 
 MODELS = {
     "llava_next": "llava-hf/llava-v1.6-mistral-7b-hf",

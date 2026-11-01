@@ -23,10 +23,10 @@ export CUDA_VISIBLE_DEVICES=MIG-4d38d5cf-c802-5308-80b8-251f3cec7480
 cd /Data1/ece_23104085/agri-perceiver
 
 # Convert GT format
-python scripts/convert_gt.py data/test_split.jsonl data/test_split_gt.jsonl
+python scripts/experiments/convert_gt.py data/test_split.jsonl data/test_split_gt.jsonl
 
 echo "=== Starting inference at $(date) ==="
-python scripts/run_inference.py \
+python scripts/experiments/run_inference.py \
     --checkpoint checkpoints/specialist_e3.pt \
     --test-data data/test_split.jsonl \
     --image-root /Data1/ece_23104085/canonical_dataset/processed_images \
