@@ -1,0 +1,462 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AgriPerceiver · ICA 2026</title>
+<meta name="description" content="AgriPerceiver: a parameter-efficient vision–language model for structured macroscopic crop phenotyping. ICA 2026, paper 16.">
+<link rel="icon" href="assets/figures/21.svg">
+<link rel="stylesheet" href="assets/css/fonts.css">
+<link rel="stylesheet" href="assets/css/deck.css">
+<link rel="stylesheet" href="assets/css/slides.css">
+</head>
+<body>
+<div class="viewport">
+<main class="stage" aria-live="polite">
+
+<!-- ═══ 01 · TITLE ═══════════════════════════════════════════════════════ -->
+<section class="slide s-title" data-section="Paper 16 · Springer CCIS" data-title="AgriPerceiver">
+  <div class="body">
+    <span class="figure fig-1 title-fig fade" style="--d:300ms"></span>
+    <div class="title-block">
+      <p class="label r">International Conference on Agriculture-Centric Computation</p>
+      <h1 class="display h-xxl settle" style="--d:150ms">AgriPerceiver</h1>
+      <p class="subtitle r">A parameter-efficient vision–language model for <em>structured</em> macroscopic crop phenotyping</p>
+      <div class="rule-ticked r"></div>
+      <p class="authors r">Vatsal Khanna<sup>*</sup> · Samridhi Saini<sup>*</sup> · Davinder Singh<sup>*</sup> · Kumkum Kwatra</p>
+      <p class="affil r"><span>Dr B R Ambedkar NIT Jalandhar</span><span>Annam.ai, IIT Ropar</span><span>* equal contribution</span></p>
+      <div class="title-chips r">
+        <span class="chip"><span class="dot"></span>ICA 2026 · 1–4 Nov · IIT Ropar</span>
+        <span class="chip leaf"><span class="dot"></span>One leaf in · one report out</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 02 · THE HOOK ═══════════════════════════════════════════════════ -->
+<section class="slide s-hook" data-section="I · The problem" data-title="The leaf">
+  <div class="body">
+    <div class="hook-text">
+      <h2 class="display h-l r">A farmer photographs a sick leaf.<br><em>What should come back?</em></h2>
+      <div class="hook-stats">
+        <div class="stat r">
+          <div class="n">20–40<small>%</small></div>
+          <div class="cap">of global crop yield is lost to plant pathogens and pests, every year.</div>
+          <div class="vs">SAVARY ET AL., NATURE ECOL. EVOL. 2019</div>
+        </div>
+        <div class="stat r">
+          <div class="n">100s<small> of millions</small></div>
+          <div class="cap">of smallholder farms. Expert inspection is slow, costly, and does not reach them.</div>
+          <div class="vs">THE BOTTLENECK IS THE AGRONOMIST'S TIME</div>
+        </div>
+      </div>
+      <p class="lede r">We asked: can a <strong>small</strong> model read a leaf the way an agronomist writes a report?</p>
+    </div>
+    <figure class="hook-leaf fade" style="--d:350ms">
+      <svg class="finder" viewBox="0 0 520 520" aria-hidden="true">
+        <path d="M20 90V20h70M430 20h70v70M500 430v70h-70M90 500H20v-70" fill="none" stroke="var(--ink)" stroke-width="4" stroke-linecap="round"/>
+      </svg>
+      <svg class="leaf-art" viewBox="0 0 400 400" role="img" aria-label="A leaf with brown target-spot lesions and yellow halos"><g transform="rotate(-14 200 200)"><use href="#leafsym" width="400" height="400"/></g></svg>
+      <figcaption class="label">Input · one photograph · any resolution</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ═══ 03 · A LABEL IS NOT A DIAGNOSIS ═════════════════════════════════ -->
+<section class="slide s-label" data-section="I · The problem" data-title="A label is not a diagnosis">
+  <div class="body">
+    <h2 class="display h-l r">A label is not <em>a diagnosis.</em></h2>
+    <div class="label-grid">
+      <div class="paper-flat classifier r">
+        <span class="label">What a classifier returns</span>
+        <div class="maize-wrap" data-maize></div>
+        <p class="one-label">“Northern Leaf Blight.”</p>
+        <p class="copy">One label. No severity, no symptoms, no reasoning, <strong>no next step.</strong></p>
+      </div>
+      <div class="arrow-mid r" aria-hidden="true">
+        <svg viewBox="0 0 120 60"><path d="M6 30 C 40 30, 70 30, 104 30" fill="none" stroke="var(--ink)" stroke-width="3" stroke-linecap="round"/><path d="M92 18 L108 30 L92 42" fill="none" stroke="var(--ink)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="paper card report r">
+        <div class="paper-bar title">What AgriPerceiver returns</div>
+<pre class="json"><span class="k">"diagnosis"</span>: <span class="v">"Northern Corn Leaf Blight"</span>,
+<span class="k">"type"</span>: <span class="v">"fungal"</span>,
+<span class="k">"severity"</span>: <span class="n">0.62</span>,  <span class="k">"confidence"</span>: <span class="n">0.81</span>,
+<span class="k">"symptoms"</span>: [<span class="v">"elongated tan lesions, wavy margins"</span>,
+             <span class="v">"chlorotic halo extending 2-3mm"</span>, …],
+<span class="k">"reasoning"</span>: <span class="v">"Elliptical pale-tan lesions parallel
+   to the leaf axis; consistent with
+   Exserohilum turcicum under high humidity."</span>,
+<span class="k">"recommended_actions"</span>: [
+   <span class="v">"Apply propiconazole fungicide within 48h"</span>, …]</pre>
+        <div class="brackets" aria-hidden="true">
+          <span style="top:52px;height:70px">classification</span>
+          <span style="top:128px;height:33px">regression</span>
+          <span style="top:167px;height:258px">language</span>
+        </div>
+      </div>
+    </div>
+    <p class="caption r">A real model output for a fungal-infected maize leaf (paper, Appendix B). <strong>Classification, regression and language: one decoding objective.</strong></p>
+  </div>
+</section>
+
+<!-- ═══ 04 · THREE WALLS ════════════════════════════════════════════════ -->
+<section class="slide s-walls" data-section="I · The gap" data-title="Why not just ask a big VLM?">
+  <div class="body">
+    <h2 class="display h-l r">Why not just ask <em>a big VLM?</em></h2>
+    <div class="walls">
+      <article class="paper card wall r">
+        <div class="glyph">T<sup>2</sup></div>
+        <h3 class="display">Lesions are tiny. <em>Tokens are expensive.</em></h3>
+        <p class="copy">Pustules, water-soaking and early chlorosis vanish when an image is resized. Keeping them needs more visual tokens, and attention grows with their <strong>square</strong>.</p>
+      </article>
+      <article class="paper card wall r">
+        <div class="glyph">{ }</div>
+        <h3 class="display">Chat models write <em>prose.</em></h3>
+        <p class="copy">Decision-support systems consume a fixed <strong>schema</strong>, not paragraphs. Prompting gets you valid JSON. It does not get you the right content.</p>
+      </article>
+      <article class="paper card wall r">
+        <div class="glyph">7–8<small>B</small></div>
+        <h3 class="display">Billions of weights. <em>One GPU.</em></h3>
+        <p class="copy">Fully fine-tuning a generalist is out of reach for most agricultural labs, and it risks <strong>forgetting</strong> what the model already knows.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 05 · THE IDEA ═══════════════════════════════════════════════════ -->
+<section class="slide s-idea" data-section="II · The idea" data-title="See sharp, think small, train little">
+  <div class="body">
+    <p class="label r">AgriPerceiver, in three lines</p>
+    <div class="idea-lines">
+      <div class="idea r"><h2 class="display">See <em>sharp.</em></h2><p class="mono">5 AnyRes tiles<br><b>≈ 2× effective resolution</b></p></div>
+      <div class="rule-ticked r"></div>
+      <div class="idea r"><h2 class="display">Think <em>small.</em></h2><p class="mono">3,645 tokens → 128 latents<br><b>28.5× compression</b></p></div>
+      <div class="rule-ticked r"></div>
+      <div class="idea r"><h2 class="display">Train <em>little.</em></h2><p class="mono">both backbones frozen<br><b>9.2% of 4.65 B parameters</b></p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 06 · ARCHITECTURE ═══════════════════════════════════════════════ -->
+<section class="slide s-arch" data-section="II · Architecture" data-title="Architecture">
+  <div class="body">
+    <div class="arch-head">
+      <h2 class="display h-m r">One leaf in. <em>One report out.</em></h2>
+      <div class="arch-legend r"><span class="chip"><i class="sw frz"></i>Frozen</span><span class="chip leaf"><i class="sw trn"></i>Trained</span></div>
+    </div>
+    <div class="arch">
+      <svg class="wires" viewBox="0 0 1696 640" width="1696" height="640" aria-hidden="true">
+        <defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1 L9 5 L1 9" fill="none" stroke="var(--ink)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+        <g data-step="1" fill="none" stroke="var(--ink)" stroke-width="2">
+          <path d="M250 300 C 290 300, 280 96, 318 96" marker-end="url(#ah)"/>
+          <path d="M250 300 C 290 300, 280 198, 318 198" marker-end="url(#ah)"/>
+          <path d="M250 300 C 290 300, 280 300, 318 300" marker-end="url(#ah)"/>
+          <path d="M250 300 C 290 300, 280 402, 318 402" marker-end="url(#ah)"/>
+          <path d="M250 300 C 290 300, 280 504, 318 504" marker-end="url(#ah)"/>
+          <path d="M406 96 C 450 96, 438 300, 478 300"/>
+          <path d="M406 198 C 450 198, 438 300, 478 300"/>
+          <path d="M406 300 C 440 300, 450 300, 478 300" marker-end="url(#ah)"/>
+          <path d="M406 402 C 450 402, 438 300, 478 300"/>
+          <path d="M406 504 C 450 504, 438 300, 478 300"/>
+        </g>
+        <g data-step="2" fill="none" stroke="var(--ink)" stroke-width="2">
+          <path d="M658 300 H 732" marker-end="url(#ah)"/>
+          <path d="M874 300 H 898" marker-end="url(#ah)"/>
+          <path d="M1040 300 H 1060" marker-end="url(#ah)"/>
+          <path d="M1156 166 V 198" marker-end="url(#ah)" stroke="var(--leaf-deep)"/>
+        </g>
+        <g data-step="3" fill="none" stroke="var(--ink)" stroke-width="2">
+          <path d="M1250 300 H 1298" marker-end="url(#ah)"/>
+          <path d="M1490 300 H 1518" marker-end="url(#ah)"/>
+        </g>
+      </svg>
+
+      <figure class="n leaf-in" style="left:0;top:175px;width:250px;height:250px">
+        <svg viewBox="0 0 400 400"><use href="#leafsym" width="400" height="400"/></svg>
+        <figcaption class="label">Any resolution</figcaption>
+      </figure>
+
+      <div data-step="1">
+        <span class="label tiles-label" style="left:300px;top:6px">AnyRes · 5 × 384²</span>
+        <div class="tile" style="left:318px;top:52px" data-tile="0 0 400 400"><b>GL</b></div>
+        <div class="tile" style="left:318px;top:154px" data-tile="0 0 200 200"><b>TL</b></div>
+        <div class="tile" style="left:318px;top:256px" data-tile="200 0 200 200"><b>TR</b></div>
+        <div class="tile" style="left:318px;top:358px" data-tile="0 200 200 200"><b>BL</b></div>
+        <div class="tile" style="left:318px;top:460px" data-tile="200 200 200 200"><b>BR</b></div>
+        <div class="n frozen box stack" style="left:478px;top:175px;width:180px;height:250px">
+          <h4>SigLIP</h4><p class="mono">SO400M · ViT</p><span class="tag">❄ frozen · 400M</span>
+        </div>
+        <span class="shape" style="left:478px;top:440px;width:180px">5 × 729 × 1152</span>
+      </div>
+
+      <div data-step="2">
+        <div class="bridge" style="left:712px;top:96px;width:560px;height:430px"><span class="label leaf-ink">Perception bridge · 391 M · trained</span></div>
+        <div class="chip leaf latents" style="left:1156px;top:120px">128 latent queries</div>
+        <div class="n trained box" style="left:734px;top:220px;width:140px;height:160px">
+          <h4>Tile<br>embed</h4>
+          <div class="tile-sw"><i></i><i></i><i></i><i></i><i></i></div>
+          <p class="mono sm">+ tile identity</p>
+        </div>
+        <div class="n trained box" style="left:900px;top:220px;width:140px;height:160px">
+          <h4>Projector</h4><p class="mono sm">2-layer MLP</p><p class="mono sm">1152 → 3072</p>
+        </div>
+        <div class="n trained box" style="left:1062px;top:200px;width:188px;height:200px">
+          <h4>Perceiver<br>Resampler</h4><p class="mono sm">2 blocks · 24 heads</p><p class="mono sm">cross → self → GLU</p>
+        </div>
+        <span class="shape" style="left:900px;top:392px;width:140px">3645 × 3072</span>
+        <span class="shape leaf-ink strong" style="left:1062px;top:412px;width:188px">128 × 3072</span>
+      </div>
+
+      <div data-step="3">
+        <div class="n frozen box stack" style="left:1300px;top:160px;width:190px;height:280px">
+          <h4>Phi-3-mini</h4><p class="mono">128k · 3.8 B</p><span class="tag">❄ frozen</span>
+          <span class="lora">+ LoRA r32 · 35M</span>
+        </div>
+        <div class="n paper json-out" style="left:1520px;top:150px;width:176px;height:300px">
+<pre>{
+ "diagnosis",
+ "type",
+ "severity",
+ "confidence",
+ "symptoms",
+ "reasoning",
+ "actions"
+}</pre>
+          <span class="label">7 fields</span>
+        </div>
+      </div>
+
+      <div class="steps-cap">
+        <p data-step="1" data-dim style="left:0;width:658px"><b>① See sharp.</b> Four quadrants + one global view, encoded by a frozen SigLIP.</p>
+        <p data-step="2" data-dim style="left:712px;width:560px"><b>② Think small.</b> Tile identity in, 3,645 tokens out as 128 latents.</p>
+        <p data-step="3" style="left:1300px;width:396px"><b>③ Speak in schema.</b> Latents spliced into a frozen LLM.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 07 · COMPRESSION ════════════════════════════════════════════════ -->
+<section class="slide s-comp" data-section="II · Compression" data-title="3,645 in, 128 out">
+  <div class="body">
+    <h2 class="display h-l r">3,645 tokens in. <em>128 out.</em></h2>
+    <div class="comp-grid">
+      <div class="comp-left r">
+        <span class="label">3,645 visual tokens · 5 tiles × 27 × 27 patches</span>
+        <div data-chart="tokens"></div>
+      </div>
+      <div class="comp-right r">
+        <span class="label">Attention cost per layer, as resolution grows</span>
+        <div data-chart="flops"></div>
+      </div>
+    </div>
+    <p class="strip r"><span><b>28.5×</b> fewer visual tokens</span><span><b>27.5×</b> fewer attention FLOPs / layer</span><span><b>13.29 M → 0.47 M</b> attention entries / head</span><span>cost <b>linear</b> in resolution</span></p>
+  </div>
+</section>
+
+<!-- ═══ 08 · DATA & TRAINING ════════════════════════════════════════════ -->
+<section class="slide s-data" data-section="II · Data & training" data-title="Data and training">
+  <div class="body">
+    <h2 class="display h-l r">117,635 leaves, <em>read by a teacher.</em></h2>
+    <div class="data-grid">
+      <div class="flow-wrap r" data-chart="flow"></div>
+      <div class="stages">
+        <article class="paper card stage-card r">
+          <div class="paper-bar title">Stage 1 · Align</div>
+          <p class="copy">Train <strong>only the bridge</strong> on image–caption pairs. Both backbones frozen.</p>
+          <p class="mono facts"><span>391 M</span><span>2 epochs</span><span>14.7 K steps</span><span>≈ 6 h</span></p>
+        </article>
+        <article class="paper card stage-card r">
+          <div class="paper-bar title">Stage 2 · Specialise</div>
+          <p class="copy">Bridge + <strong>LoRA</strong> on structured JSON, each sample weighted by the teacher's confidence.</p>
+          <p class="mono facts"><span>426 M · 9.2%</span><span>3 epochs</span><span>37.9 K steps</span><span>≈ 18 h</span></p>
+        </article>
+        <p class="label r gpu">One NVIDIA H200 · bfloat16 · seed 42</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 09 · MAIN RESULTS ═══════════════════════════════════════════════ -->
+<section class="slide s-results" data-section="III · Results" data-title="Main results">
+  <div class="body">
+    <h2 class="display h-l r">Valid JSON is easy. <em>The right JSON isn't.</em></h2>
+    <div class="stats4">
+      <div class="stat r"><div class="n leaf-ink" data-count="0.810" data-dec="3">0.810</div><div class="cap">composite score</div><div class="vs">BEST BASELINE 0.615 · +0.195</div></div>
+      <div class="stat r"><div class="n"><span data-count="1.9" data-dec="1">1.9</span>×</div><div class="cap">pathology-type macro-F1</div><div class="vs">0.645 VS 0.336 (INTERNVL2)</div></div>
+      <div class="stat r"><div class="n"><span data-count="3.3" data-dec="1">3.3</span>×</div><div class="cap">lower severity error</div><div class="vs">MAE 0.067 VS 0.224 (QWEN2-VL)</div></div>
+      <div class="stat r"><div class="n"><span data-count="9.2" data-dec="1">9.2</span><small>%</small></div><div class="cap">of parameters trained</div><div class="vs">426 M OF 4.65 B</div></div>
+    </div>
+    <table class="t results r">
+      <thead>
+        <tr class="group"><th></th><th colspan="2"><span>Structural</span></th><th colspan="2"><span>Classification</span></th><th colspan="2"><span>Regression</span></th><th><span>Semantic</span></th><th></th></tr>
+        <tr><th>Model · 5,062 held-out leaves</th><th>JSON %</th><th>Schema %</th><th>Type F1</th><th>Diag. FM</th><th>Sev. MAE ↓</th><th>Sev. r</th><th>BERTScore</th><th>Composite</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>LLaVA-NeXT-7B</td><td class="muted">99.9</td><td class="muted">99.9</td><td>0.134</td><td>0.001</td><td>0.344</td><td>0.226</td><td>0.847</td><td><span class="cbar"><i style="width:59%"></i></span>0.590</td></tr>
+        <tr><td>InternVL2-8B</td><td class="muted">100.0</td><td class="muted">100.0</td><td>0.336</td><td>0.005</td><td>0.385</td><td>0.624</td><td>0.848</td><td><span class="cbar"><i style="width:61.1%"></i></span>0.611</td></tr>
+        <tr><td>Qwen2-VL-7B</td><td class="muted">99.9</td><td class="muted">99.9</td><td>0.287</td><td>0.001</td><td>0.224</td><td>0.666</td><td>0.830</td><td><span class="cbar"><i style="width:61.5%"></i></span>0.615</td></tr>
+        <tr class="ours"><td>AgriPerceiver <span class="mono sm dim">4.6 B</span></td><td class="muted">99.7</td><td class="muted">99.7</td><td>0.645</td><td>0.486</td><td>0.067</td><td>0.855</td><td>0.921</td><td><span class="cbar ours"><i style="width:81%"></i></span>0.810</td></tr>
+      </tbody>
+    </table>
+    <p class="table-note r"><span class="chip"><span class="dot"></span>Structure is not the differentiator</span><span>every model emits valid JSON ≥ 99.7% of the time; the gap is entirely in <strong>what the JSON says.</strong></span></p>
+  </div>
+</section>
+
+<!-- ═══ 10 · PER-CLASS ══════════════════════════════════════════════════ -->
+<section class="slide s-perclass" data-section="III · Per-class" data-title="Per-class F1">
+  <div class="body">
+    <div class="pc-head">
+      <h2 class="display h-m r">Generalists see fungus. <em>They miss the rest.</em></h2>
+      <div class="legend r" data-legend="llava,intern,qwen,ours"></div>
+    </div>
+    <div class="r" data-chart="perClass"></div>
+    <p class="lede r">On <strong>bacterial</strong> and <strong>viral</strong> leaves every baseline scores F1 ≤ 0.025. AgriPerceiver reaches 0.56 and 0.53, the only model usable on all six classes.</p>
+  </div>
+</section>
+
+<!-- ═══ 11 · CONFUSION ══════════════════════════════════════════════════ -->
+<section class="slide s-confusion" data-section="IV · Honest errors" data-title="Where it still fails">
+  <div class="body">
+    <div class="cm r" data-chart="confusion"></div>
+    <div class="cm-side">
+      <h2 class="display h-l r">Where it still <em>gets it wrong.</em></h2>
+      <article class="paper-flat cause r">
+        <div class="cause-n rust-ink">29%</div>
+        <div><h3 class="display">Yellow looks like yellow.</h3>
+        <p class="copy">Viral → deficiency. Diffuse <strong>chlorosis</strong> looks the same whether a virus or a missing nutrient caused it. Unknown → deficiency is the largest single cell: 169 leaves.</p></div>
+      </article>
+      <article class="paper-flat cause r">
+        <div class="cause-n rust-ink">21–23%</div>
+        <div><h3 class="display">Early lesions look fungal.</h3>
+        <p class="copy">Bacterial and pest → fungal. At 384 px per tile, early lesions and fungal <strong>necrosis</strong> overlap.</p></div>
+      </article>
+      <p class="cm-foot r">These are confusions of <em>biology</em>, not of format: clear targets for augmentation.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 12 · CALIBRATION ════════════════════════════════════════════════ -->
+<section class="slide s-calib" data-section="IV · Calibration" data-title="Calibration">
+  <div class="body">
+    <div class="rel r" data-chart="reliability"></div>
+    <div class="calib-side">
+      <h2 class="display h-l r">Confident.<br><em>A little too confident.</em></h2>
+      <p class="copy r">In the 0.7–0.8 bin, the biggest source of error, the model says <strong>0.80</strong> and is right <strong>0.57</strong> of the time. That gap is inherited: the training targets carry the teacher's own confidence.</p>
+      <div class="ece r">
+        <span class="label">Expected calibration error · lower is better</span>
+        <div class="ece-row"><span>AgriPerceiver</span><i style="--w:13.9%;background:var(--leaf)"></i><b>0.139</b></div>
+        <div class="ece-row"><span>InternVL2-8B</span><i style="--w:38.4%;background:var(--s-intern)"></i><b>0.38</b></div>
+        <div class="ece-row"><span>Qwen2-VL-7B</span><i style="--w:37.2%;background:var(--s-qwen)"></i><b>0.37</b></div>
+        <div class="ece-row warn"><span>LLaVA-NeXT-7B</span><i style="--w:0.4%;background:var(--s-llava)"></i><b>≈ 0*</b></div>
+        <p class="foot">* not calibration: it answers “unknown” for 98.7% of leaves.</p>
+      </div>
+      <p class="r fix"><span class="chip leaf"><span class="dot"></span>Next: temperature scaling</span></p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 13 · LIMITATIONS ════════════════════════════════════════════════ -->
+<section class="slide s-limits" data-section="IV · Limitations" data-title="What we have not shown">
+  <div class="body">
+    <h2 class="display h-l r">What this paper does <em>not</em> prove. <em>Yet.</em></h2>
+    <table class="t ledger">
+      <thead><tr><th></th><th>Shortcoming</th><th>Why it matters</th><th>What closes it</th></tr></thead>
+      <tbody>
+        <tr class="r"><td class="ix">01</td><td><b>Our labels come from a model,</b> not from agronomists.</td><td>We measure agreement with Gemma-3-12B. Its mistakes and biases sit inside our ground truth.</td><td>An agronomist-validated gold test set.</td></tr>
+        <tr class="r"><td class="ix">02</td><td><b>Baselines were prompted,</b> not fine-tuned.</td><td>We show specialisation beats prompting, not yet that our design beats a fine-tuned generalist.</td><td>Fine-tune a baseline on the same 96K labels.</td></tr>
+        <tr class="r"><td class="ix">03</td><td><b>The spatial parts barely move</b> the aggregate.</td><td>−AnyRes: −0.004 composite. −tile embeddings: ≈ 0. Ablations of latent count and of LoRA need retraining.</td><td>Trained ablations: 64 / 256 latents, no-LoRA.</td></tr>
+        <tr class="r"><td class="ix">04</td><td><b>Confidence runs high.</b></td><td>ECE 0.139. A farmer will read 0.8 as 0.8.</td><td>Post-hoc temperature scaling.</td></tr>
+        <tr class="r"><td class="ix">05</td><td><b>One leaf, one photo,</b> one moment.</td><td>No field trial, no multiple views, no disease progression over time.</td><td>Longitudinal, multi-image tracking.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ═══ 14 · THE ROAD AHEAD ═════════════════════════════════════════════ -->
+<section class="slide s-road" data-section="V · What's next" data-title="The road ahead">
+  <div class="body">
+    <h2 class="display h-l r">The road <em>from here.</em></h2>
+    <div class="road" data-chart="roadmap"></div>
+  </div>
+</section>
+
+<!-- ═══ 15 · CLOSE ══════════════════════════════════════════════════════ -->
+<section class="slide s-close" data-section="Thank you" data-title="Thank you">
+  <div class="body">
+    <span class="figure fig-21 close-fig fade" style="--d:300ms"></span>
+    <div class="close-text">
+      <h2 class="display h-xl r">Every leaf is a report <em>waiting to be read.</em></h2>
+      <div class="takeaways">
+        <p class="r"><b>See sharp.</b><span>5 tiles, ≈ 2× resolution</span></p>
+        <p class="r"><b>Think small.</b><span>128 latents, 27.5× cheaper attention</span></p>
+        <p class="r"><b>Train little.</b><span>9.2% of weights → 0.810 composite</span></p>
+      </div>
+      <div class="rule-ticked r"></div>
+      <p class="thanks r"><span class="display">Thank you.</span> <span class="chip"><span class="dot"></span>Questions welcome</span></p>
+      <p class="ack r">With gratitude to Dr Roshan Bodile and Dr Rohit Singh (NIT Jalandhar), and to Annam.ai, IIT Ropar, led by Dr Pushpendra Pal Singh, for mentorship and H200 compute.</p>
+      <p class="label r">vatsalk.ec.23@nitj.ac.in · Trying to do our bit in making the world a better place.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ BACKUP · UNDER THE HOOD ═════════════════════════════════════════ -->
+<section class="slide s-backup" data-backup data-section="Backup · For questions" data-title="Under the hood">
+  <div class="body">
+    <h2 class="display h-m r">Under <em>the hood.</em></h2>
+    <div class="r">
+      <span class="label">Where the 4.65 B parameters live · green is trained (426 M · 9.2%)</span>
+      <div data-chart="params"></div>
+    </div>
+    <div class="backup-grid">
+      <table class="t small r">
+        <thead><tr><th>Training</th><th>Stage 1</th><th>Stage 2</th></tr></thead>
+        <tbody>
+          <tr><td>Trainable</td><td>bridge · 391 M</td><td>bridge + LoRA · 426 M</td></tr>
+          <tr><td>Optimiser · LR</td><td>AdamW · 1e-4</td><td>AdamW · 1e-4</td></tr>
+          <tr><td>Batch (effective)</td><td>16</td><td>8 × 2 = 16</td></tr>
+          <tr><td>Epochs · steps</td><td>2 · 14.7 K</td><td>3 · 37.9 K</td></tr>
+          <tr><td>Peak VRAM · time</td><td>~20 GB · ~6 h</td><td>~35 GB · ~18 h</td></tr>
+          <tr><td>LoRA</td><td>none</td><td>r 32 · α 64 · drop 0.1</td></tr>
+        </tbody>
+      </table>
+      <div class="r formula paper-flat">
+        <span class="label">Composite score · weights</span>
+        <div class="weights">
+          <span style="--w:20"><b>0.20</b>type F1</span><span style="--w:15"><b>0.15</b>diag. FM</span><span style="--w:15"><b>0.15</b>BERT symptoms</span>
+          <span style="--w:10"><b>0.10</b>1 − MAE</span><span style="--w:10"><b>0.10</b>BERT reasoning</span><span style="--w:10"><b>0.10</b>BERT actions</span>
+          <span style="--w:10"><b>0.10</b>JSON valid</span><span style="--w:5"><b>0.05</b>1 − ECE</span><span style="--w:5"><b>0.05</b>schema</span>
+        </div>
+        <p class="copy">Robust to reweighting: doubling any one family keeps a margin of at least <strong>+0.161</strong> over the best baseline.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+</div>
+
+<nav class="hud" aria-label="Deck controls">
+  <button data-act="presenter" title="Presenter view (S)">Presenter <kbd>S</kbd></button>
+  <button data-act="overview" title="Overview (O)">Overview <kbd>O</kbd></button>
+  <button data-act="full" title="Fullscreen (F)">Fullscreen <kbd>F</kbd></button>
+  <button data-act="pdf" title="Download PDF (D)">Download PDF <kbd>D</kbd></button>
+</nav>
+<div class="blackout" aria-hidden="true"></div>
+<div class="tip" role="tooltip"></div>
+
+<script>
+  /* The road ahead, kept beside the slide that draws it. */
+  window.ROADMAP = [
+    { when: "Next", tone: "now", title: "Calibrate", body: "Temperature scaling, so that a stated 0.8 means 0.8." },
+    { when: "Next", tone: "now", title: "An expert gold set", body: "Agronomist-validated labels to replace the teacher at test time." },
+    { when: "Soon", title: "The hard classes", body: "Targeted augmentation for chlorosis and early lesions." },
+    { when: "Soon", title: "Finish the ablations", body: "Fine-tuned baselines, no-LoRA, 64 / 256 latents." },
+    { when: "Horizon", title: "Leaves over time", body: "Longitudinal, multi-image tracking of disease progression." },
+    { when: "Horizon", title: "Beyond one crop", body: "Cross-crop transfer, then pilots in real fields beside agronomists." },
+  ];
+</script>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/charts.js"></script>
+<script src="assets/js/deck.js"></script>
+</body>
+</html>
