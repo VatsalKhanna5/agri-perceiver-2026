@@ -1,6 +1,6 @@
 // Renders the deck and the speaker script to PDF with headless Chrome.
 //
-//   cd presentation-ica26/tools && npm install && node export.mjs
+//   cd presentations/ica26/tools && npm install && node export.mjs
 //
 // Writes ../export/AgriPerceiver-ICA26.pdf (one 1920×1080 page per slide,
 // every build at its final state) and ../export/AgriPerceiver-ICA26-speaker-script.pdf.

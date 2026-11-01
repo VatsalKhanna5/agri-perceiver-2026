@@ -2,8 +2,8 @@
 Parse Stage 1 & Stage 2 training logs and generate publication-quality loss curves.
 
 Usage:
-    python scripts/plot_training_curves.py
-    python scripts/plot_training_curves.py --output figures/training_curves.pdf
+    python scripts/paper/plot_training_curves.py
+    python scripts/paper/plot_training_curves.py --output papers/icml26-fm4ls/figures/training_curves.pdf
 """
 
 import argparse
@@ -189,7 +189,7 @@ def main():
     parser = argparse.ArgumentParser(description="Plot AgriPerceiver training loss curves")
     parser.add_argument("--s1-log", type=str, default="docs/logs/stage1_alignment.log")
     parser.add_argument("--s2-log", type=str, default="docs/logs/stage2_specialization.log")
-    parser.add_argument("--output", type=str, default="figures/training_curves.pdf")
+    parser.add_argument("--output", type=str, default="papers/icml26-fm4ls/figures/training_curves.pdf")
     parser.add_argument("--smooth", type=int, default=100)
     args = parser.parse_args()
 

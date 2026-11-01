@@ -1,4 +1,11 @@
-"""End-to-end acceptance check of the ICA 2026 camera-ready package."""
+"""End-to-end acceptance check of the ICA 2026 camera-ready package.
+
+Usage:
+    python scripts/paper/verify_camera_ready.py [REBUILT_PDF]
+
+Checks papers/ica26/main.pdf; if REBUILT_PDF is given, also checks that a
+fresh build of the source produces identical text.
+"""
 import io
 import os
 import re
@@ -7,8 +14,12 @@ import pymupdf
 
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
 
-CR = r'D:\Research\agri-perceiver\camera-ready'
-PDF = os.path.join(CR, '16_camera_ready.pdf')
+PAPER = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
+                     'papers', 'ica26')
+PDF = os.path.join(PAPER, 'main.pdf')
+SOURCES = ('main.tex', 'main.bbl', 'references.bib', 'llncs.cls', 'splncs04.bst',
+           'figures/architecture_a.pdf', 'figures/architecture_b.pdf',
+           'figures/perclass_f1.pdf', 'figures/confusion.pdf')
 REBUILD = sys.argv[1] if len(sys.argv) > 1 else None
 
 d = pymupdf.open(PDF)
@@ -41,7 +52,7 @@ checks = [
      [l['uri'].rsplit('/', 1)[-1] for l in d[0].get_links() if 'orcid.org' in (l.get('uri') or '')]),
     ('\\orcidID markup kept for Springer',
      len(re.findall(r'\\orcidID\{\d{4}-\d{4}-\d{4}-\d{3}[0-9X]\}',
-                    io.open(os.path.join(CR, 'src', 'main.tex'), encoding='utf-8').read())) == 4,
+                    io.open(os.path.join(PAPER, 'main.tex'), encoding='utf-8').read())) == 4,
      'yes'),
     # The star is typeset in math mode, so it comes out as U+2217. Expect 4:
     # one on each of the three equal contributors, plus the footnote marker.
@@ -64,8 +75,7 @@ checks = [
     ('no ?? unresolved refs', '??' not in text, 'clean'),
     ('margin overflow <= 4pt (microtype only)', max_over <= 4.0, f'{max_over:.1f}pt'),
     ('PDF metadata title set', bool(d.metadata.get('title')), 'yes'),
-    ('deliverables present', all(os.path.exists(os.path.join(CR, f)) for f in
-     ('16_camera_ready.pdf', '16_source_file.zip')), 'yes'),
+    ('source bundle complete', all(os.path.exists(os.path.join(PAPER, f)) for f in SOURCES), 'yes'),
 ]
 
 if REBUILD and os.path.exists(REBUILD):

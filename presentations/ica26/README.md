@@ -8,7 +8,7 @@ The deck is 15 slides plus one backup slide, and every number in it comes from t
 ## Present
 
 ```bash
-cd presentation-ica26
+cd presentations/ica26
 python -m http.server 8765
 ```
 
@@ -54,7 +54,7 @@ tools/export.mjs         rebuilds both PDFs with headless Chrome
 ## Re-export the PDFs after editing
 
 ```bash
-cd presentation-ica26/tools
+cd presentations/ica26/tools
 npm install
 npm run export
 ```
@@ -64,9 +64,9 @@ You can also open the deck in a browser and use **Print → Save as PDF**, with 
 
 ## Data notes
 
-- The numbers come from `paper-ica26/main.tex`, which is identical to `camera-ready/src`, and from `results/eval_results.json`.
-  `paper/RESULTS.md` has older composite scores (0.717 and 0.527) and is not used.
-- The per-class F1 scores for the baselines come from `scripts/make_figs.py`, the source of Fig. 2.
+- The numbers come from `papers/ica26/main.tex` (the camera-ready source) and from `results/eval_results.json`.
+  `docs/RESULTS.md` has older composite scores (0.717 and 0.527) and is not used.
+- The per-class F1 scores for the baselines come from `scripts/paper/make_figs.py`, the source of Fig. 2.
   For pest, InternVL2 scores **0.227**. The paper's text says baselines score pest F1 ≤ 0.017, which only holds for Qwen2-VL and LLaVA.
   The slides only claim "≤ 0.025" for bacterial and viral, and the Q&A notes include an answer for this.
 - The chart palette passed the dataviz validator against the paper surface `#FDFCF6`.

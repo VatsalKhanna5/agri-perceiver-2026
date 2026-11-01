@@ -12,8 +12,8 @@ Each panel is then cropped to its own content, removing dead vertical space.
 import os
 import pymupdf
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-FIGS = os.path.join(ROOT, 'paper-ica26', 'figures')
+ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+FIGS = os.path.join(ROOT, 'papers', 'ica26', 'figures')
 SRC = os.path.join(FIGS, 'architecture.pdf')
 OUT_A = os.path.join(FIGS, 'architecture_a.pdf')
 OUT_B = os.path.join(FIGS, 'architecture_b.pdf')

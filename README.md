@@ -118,7 +118,7 @@ Evaluation on a held-out test set of 5,062 samples. All baselines receive the sa
 | − Tile embeddings | TBD | TBD |
 | − Stage-2 LoRA (Stage-1 bridge only) | TBD | TBD |
 
-Full results and per-metric breakdowns are in [paper/RESULTS.md](paper/RESULTS.md).
+Full results and per-metric breakdowns are in [docs/RESULTS.md](docs/RESULTS.md).
 
 ---
 
@@ -330,7 +330,7 @@ agri-perceiver/
 | [docs/TRAINING.md](docs/TRAINING.md) | Two-stage training protocol, LoRA configuration, hardware requirements, optimizer settings |
 | [docs/EVALUATION.md](docs/EVALUATION.md) | Metric definitions, baseline protocols, LLM-as-judge scoring axes and consensus procedure |
 | [docs/DATA_PIPELINE.md](docs/DATA_PIPELINE.md) | Data labeling pipeline: manifest generation, Gemma-3 inference, confidence filtering, normalization |
-| [paper/RESULTS.md](paper/RESULTS.md) | Full experimental results: main comparison, ablation study, per-class breakdowns, sensitivity analysis |
+| [docs/RESULTS.md](docs/RESULTS.md) | Full experimental results: main comparison, ablation study, per-class breakdowns, sensitivity analysis |
 
 ---
 

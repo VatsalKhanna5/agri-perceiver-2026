@@ -8,7 +8,7 @@ Supports runtime ablations without retraining:
   - no_tile_embed: Zero out learned spatial tile embeddings
 
 Usage:
-    python scripts/run_ablation.py \
+    python scripts/experiments/run_ablation.py \
         --ablation no_lora \
         --checkpoint checkpoints/stage1_connector_weights.pt \
         --test-data data/test_split.jsonl \
@@ -29,7 +29,7 @@ import cv2
 import numpy as np
 import torch
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "src"))
 
 from agri_perceiver.inference.predictor import (
     AgriPredictor,

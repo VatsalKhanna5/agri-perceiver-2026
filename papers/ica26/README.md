@@ -16,10 +16,21 @@ for the final version.
 | `figures/architecture_b.pdf` | Fig. 1(b): compression and generation. |
 | `figures/perclass_f1.pdf` | Fig. 2: per-class pathology-type F1, all four models. |
 | `figures/confusion.pdf` | Fig. 3: row-normalised confusion matrix (ours). |
-| `figures/architecture.pdf` | Unsplit master of Fig. 1 (not used by `main.tex`). |
+| `figures/architecture.pdf` | Unsplit, label-corrected master of Fig. 1 (not used by `main.tex`). |
+| `figures/architecture_orig.pdf` | Pristine draw.io export, the input to the correction script. |
+| `figures/calibration.pdf`, `figures/flops.pdf` | Supplementary plots (reliability diagram, attention FLOPs); not used by `main.tex`. |
+| `main.bbl` | Pre-built bibliography, shipped with the Springer source bundle. |
+| `main.pdf` | Compiled camera-ready PDF, as submitted. |
 
-Plot figures are regenerated from the real evaluation output
-(`results/eval_results.json`) by `scripts/make_figs.py` in the repo root.
+## Regenerating figures
+All scripts live in `scripts/paper/` and are run from the repo root.
+
+| Script | Produces |
+|--------|----------|
+| `make_figs.py` | `perclass_f1`, `confusion`, `calibration`, `flops` from `results/eval_results.json` |
+| `fix_architecture_figure.py` | `architecture.pdf` from `architecture_orig.pdf` (needs PyMuPDF and the TeX Gyre fonts) |
+| `split_architecture_figure.py` | `architecture_a.pdf` and `architecture_b.pdf` from `architecture.pdf` |
+| `verify_camera_ready.py` | Runs the acceptance checks below against `main.pdf` |
 
 ## Building
 ```bash

@@ -38,7 +38,7 @@ echo "=== Inference finished at $(date) with exit code: $INFER_EXIT ==="
 
 # Validate predictions
 echo "=== Validating predictions ==="
-python scripts/validate_predictions.py results/predictions.jsonl
+python scripts/experiments/validate_predictions.py results/predictions.jsonl
 
 if [ $INFER_EXIT -eq 0 ]; then
     echo "=== Running evaluation ==="

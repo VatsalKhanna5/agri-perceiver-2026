@@ -3,7 +3,7 @@
 Batch inference for baseline VLMs (Gemma-3, LLaVA-NeXT, InternVL2).
 
 Usage:
-    python scripts/run_baseline_inference.py \
+    python scripts/experiments/run_baseline_inference.py \
         --model gemma3 \
         --test-data data/test_split.jsonl \
         --image-root ~/canonical_dataset/processed_images \

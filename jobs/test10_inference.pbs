@@ -27,6 +27,6 @@ python scripts/run_inference.py \
     --max-samples 10
 
 echo "=== Validating output ==="
-python scripts/validate_predictions.py results/test10_predictions.jsonl
+python scripts/experiments/validate_predictions.py results/test10_predictions.jsonl
 
 echo "=== Test done at $(date) ==="

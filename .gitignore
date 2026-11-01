@@ -56,6 +56,7 @@ Thumbs.db
 # ── Data splits (generated, large) ────────────────────
 data/
 
+# ── Local-only: Springer author kit (not redistributable) ──
 paper-spr/
 
 # ── LaTeX build artefacts (main.bbl is kept: Springer needs it) ──

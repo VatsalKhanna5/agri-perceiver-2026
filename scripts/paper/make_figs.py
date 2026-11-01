@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """Generate publication figures for AgriPerceiver (ICA 2026) from REAL eval data.
-All numbers trace to results/eval_results.json and paper/RESULTS.md.
-Outputs vector PDFs into paper-ica26/figures/.
+All numbers trace to results/eval_results.json and docs/RESULTS.md.
+Outputs vector PDFs into papers/ica26/figures/.
 """
 import json, os
 import numpy as np
@@ -10,8 +10,8 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.patches import Patch
 
-ROOT = r"d:\Research\agri-perceiver"
-OUT = os.path.join(ROOT, "paper-ica26", "figures")
+ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+OUT = os.path.join(ROOT, "papers", "ica26", "figures")
 os.makedirs(OUT, exist_ok=True)
 
 def save(fig, name):
@@ -49,7 +49,7 @@ matplotlib.rcParams["hatch.linewidth"] = 0.5
 
 # ==========================================================================
 # FIG 1 — Per-class pathology-type F1 (grouped bars).  REAL data.
-#   baselines: paper/RESULTS.md sec.2 ; ours: eval_results.json per_class f1
+#   baselines: docs/RESULTS.md sec.2 ; ours: eval_results.json per_class f1
 # ==========================================================================
 classes = ["Fungal", "Unknown", "Bacterial", "Deficiency", "Pest", "Viral"]
 key = {"Fungal": "fungal", "Unknown": "unknown", "Bacterial": "bacterial",

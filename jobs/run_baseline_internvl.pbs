@@ -16,7 +16,7 @@ export HF_HOME=/Data1/ece_23104085/hf_cache
 export CUDA_VISIBLE_DEVICES=MIG-2f219700-5dc6-59eb-81ef-2bb9414d3ec0
 cd /Data1/ece_23104085/agri-perceiver
 
-python scripts/run_baseline_inference.py \
+python scripts/experiments/run_baseline_inference.py \
     --model internvl2 \
     --test-data data/test_split.jsonl \
     --image-root /Data1/ece_23104085/canonical_dataset/processed_images \
@@ -24,7 +24,7 @@ python scripts/run_baseline_inference.py \
     --resume
 
 echo "=== Validating ==="
-python scripts/validate_predictions.py results/internvl2_predictions.jsonl
+python scripts/experiments/validate_predictions.py results/internvl2_predictions.jsonl
 
 echo "=== Running evaluation ==="
 python -m agri_perceiver.evaluation.run_eval \

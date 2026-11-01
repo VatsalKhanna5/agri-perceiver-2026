@@ -18,8 +18,8 @@ import os
 import shutil
 import pymupdf
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-FIGS = os.path.join(ROOT, 'paper-ica26', 'figures')
+ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+FIGS = os.path.join(ROOT, 'papers', 'ica26', 'figures')
 SRC = os.path.join(FIGS, 'architecture_orig.pdf')   # pristine draw.io export
 DST = os.path.join(FIGS, 'architecture.pdf')
 

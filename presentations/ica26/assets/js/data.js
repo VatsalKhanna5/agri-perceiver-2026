@@ -1,5 +1,5 @@
 /* Every number on the slides comes from here, and every number here comes from
-   the camera-ready paper (paper-ica26/main.tex, identical to camera-ready/src)
+   the camera-ready paper (papers/ica26/main.tex)
    or from results/eval_results.json. The source is noted beside each block. */
 
 window.AP = {
@@ -11,7 +11,7 @@ window.AP = {
     { key: "ours", name: "AgriPerceiver", params: "4.6B", json: 99.7, schema: 99.7, f1: 0.645, fm: 0.486, mae: 0.067, r: 0.855, bert: 0.921, comp: 0.810 },
   ],
 
-  // Fig. 2 data. Baselines: scripts/make_figs.py (from paper/RESULTS.md §2);
+  // Fig. 2 data. Baselines: scripts/paper/make_figs.py (from docs/RESULTS.md §2);
   // ours: eval_results.json classification.type.per_class. Support from Table 3.
   classes: ["Fungal", "Unknown", "Bacterial", "Deficiency", "Pest", "Viral"],
   support: { Fungal: 1521, Unknown: 1535, Bacterial: 692, Deficiency: 618, Pest: 351, Viral: 345 },

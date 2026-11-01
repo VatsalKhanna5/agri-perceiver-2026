@@ -16,7 +16,7 @@ export HF_HOME=/Data1/ece_23104085/hf_cache
 export CUDA_VISIBLE_DEVICES=MIG-2f219700-5dc6-59eb-81ef-2bb9414d3ec0
 cd /Data1/ece_23104085/agri-perceiver
 
-python scripts/run_ablation.py \
+python scripts/experiments/run_ablation.py \
     --ablation no_tile_embed \
     --checkpoint checkpoints/specialist_e3.pt \
     --test-data data/test_split.jsonl \
@@ -24,7 +24,7 @@ python scripts/run_ablation.py \
     --output results/ablation_no_tile_embed_predictions.jsonl
 
 echo "=== Validating ==="
-python scripts/validate_predictions.py results/ablation_no_tile_embed_predictions.jsonl
+python scripts/experiments/validate_predictions.py results/ablation_no_tile_embed_predictions.jsonl
 
 echo "=== Running evaluation ==="
 python -m agri_perceiver.evaluation.run_eval \

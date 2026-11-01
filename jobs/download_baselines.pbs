@@ -16,7 +16,7 @@ export HF_HOME=/Data1/ece_23104085/hf_cache
 cd /Data1/ece_23104085/agri-perceiver
 
 # LLaVA-NeXT already downloaded. Only fetch the two that failed previously.
-python scripts/download_baselines.py internvl2 qwen2vl
+python scripts/experiments/download_baselines.py internvl2 qwen2vl
 
 echo "=== Download complete at $(date) ==="
 du -sh $HF_HOME

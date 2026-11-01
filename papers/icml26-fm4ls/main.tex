@@ -2,13 +2,12 @@
 % AgriPerceiver: ICML 2026 Workshop Paper
 % 3rd Workshop on Multi-modal Foundation Models and LLMs for Life Sciences
 %
-% Compilation (from paper/ directory):
-%   TEXINPUTS="../icml2026 (1)/:" pdflatex main.tex
+% Compilation (from papers/icml26-fm4ls/), with the ICML 2026 style files
+% (icml2026.sty / icml2026.bst) copied into this directory or on TEXINPUTS:
+%   pdflatex main.tex
 %   bibtex main
-%   TEXINPUTS="../icml2026 (1)/:" pdflatex main.tex
-%   TEXINPUTS="../icml2026 (1)/:" pdflatex main.tex
-%
-% Or copy icml2026.sty / icml2026.bst into paper/ before compiling.
+%   pdflatex main.tex
+%   pdflatex main.tex
 % ============================================================================
 \documentclass{article}
 
@@ -38,8 +37,7 @@
 % ICML 2026 style — camera-ready
 \usepackage[accepted]{icml2026}
 
-% Search paths for figures: paper/figures/, ../docs/, ../figures/
-\graphicspath{{figures/}{../docs/}{../figures/}}
+\graphicspath{{figures/}}
 
 % ── Macros ────────────────────────────────────────────────────────────────────
 \newcommand{\ours}{AgriPerceiver}
@@ -136,7 +134,7 @@ the full inference stack within a single-GPU 24\,GB VRAM budget.
 
 \begin{figure*}[t]
   \centering
-  \includegraphics[width=\textwidth]{VLM.drawio (1).pdf}
+  \includegraphics[width=\textwidth]{architecture.pdf}
   \caption{\textbf{\ours{} architecture.} 
   \textbf{(1) Tiling:} The input is decomposed into 5 AnyRes tiles, capturing both global context and fine-grained local details at ${{\approx}}2\times$ effective resolution. 
   \textbf{(2) Encoding:} A frozen SigLIP extracts patch tokens, which are enriched with learned spatial embeddings. 
