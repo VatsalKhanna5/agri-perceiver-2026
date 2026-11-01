@@ -1,4 +1,4 @@
-# AgriPerceiver VLM — Complete Architecture & Repository Documentation
+# AgriPerceiver VLM — Architecture
 
 ## Table of Contents
 
@@ -20,12 +20,11 @@
    - 7.2 [AgriVLM Dataset (Stage 2)](#72-agrivlm-dataset-stage-2)
    - 7.3 [Collation Functions](#73-collation-functions)
 8. [Inference Pipeline](#8-inference-pipeline)
-9. [HuggingFace Export — KisaanMithraa-Drishti](#9-huggingface-export--kisaanmithraa-drishti)
-10. [Repository Structure](#10-repository-structure)
-11. [Tensor Shape Flow — End-to-End](#11-tensor-shape-flow--end-to-end)
-12. [Configuration & Environment](#12-configuration--environment)
-13. [Monitoring & Utilities](#13-monitoring--utilities)
-14. [Design Decisions & Rationale](#14-design-decisions--rationale)
+9. [Code Map](#9-code-map)
+10. [Tensor Shape Flow — End-to-End](#10-tensor-shape-flow--end-to-end)
+11. [Configuration & Environment](#11-configuration--environment)
+12. [Testing](#12-testing)
+13. [Design Decisions & Rationale](#13-design-decisions--rationale)
 
 ---
 
@@ -47,7 +46,7 @@ The model follows the established two-stage VLM training paradigm (pioneered by 
 | **Efficient visual compression** | Perceiver Resampler compresses 3,645 visual tokens → 128 latents |
 | **Domain specialization** | Two-stage curriculum: alignment → agricultural fine-tuning |
 | **Structured output** | Model trained to produce JSON-formatted pathology reports |
-| **Parameter efficiency** | LoRA adapters on Phi-3 during Stage 2 (only ~2% trainable params) |
+| **Parameter efficiency** | Frozen backbones; only the bridge and Stage-2 LoRA adapters train (~426M, 9.2% of params) |
 
 ### Backbone Components
 
@@ -55,7 +54,7 @@ The model follows the established two-stage VLM training paradigm (pioneered by 
 |-----------|-------|------------|------|
 | Vision Encoder | SigLIP-SO400M-patch14-384 | ~400M | Patch-level visual feature extraction |
 | Language Model | Phi-3-mini-128k-instruct | ~3.8B | Text generation and reasoning |
-| Visual Bridge | Custom (Perceiver + Projector + TileEmbed) | ~50M | Cross-modal alignment |
+| Visual Bridge | Custom (Perceiver + Projector + TileEmbed) | ~391M | Cross-modal alignment |
 
 ---
 
@@ -120,7 +119,7 @@ The model follows the established two-stage VLM training paradigm (pioneered by 
 
 ### 3.1 AnyRes Tiling Strategy
 
-**File:** Implemented inline in datasets (`data/datasets/alignment_dataset.py`, `data/datasets/agri_vlm_dataset.py`, `inference_test.py`)
+**File:** `tile_image()` in [src/agri_perceiver/inference/predictor.py](../src/agri_perceiver/inference/predictor.py), mirrored in the dataset classes under [src/agri_perceiver/data/](../src/agri_perceiver/data/)
 
 The model uses an **AnyRes (Any Resolution)** tiling approach to preserve spatial detail from high-resolution agricultural photographs. Every input image, regardless of its native resolution, is decomposed into **5 tiles**:
 
@@ -164,7 +163,7 @@ tiles = [
 
 ### 3.2 SigLIP Vision Encoder
 
-**File:** [models/vision/siglip_wrapper.py](models/vision/siglip_wrapper.py)
+**File:** [src/agri_perceiver/model/backbones.py](../src/agri_perceiver/model/backbones.py) — `load_vision_encoder()`
 
 **Model:** `google/siglip-so400m-patch14-384`
 
@@ -194,7 +193,7 @@ The SigLIP wrapper (`SigLIPWrapper`) provides a clean interface, though during a
 
 ### 3.3 Tile Embeddings (Spatial Grounding)
 
-**File:** [models/spatial/tile_embeddings.py](models/spatial/tile_embeddings.py)
+**File:** [src/agri_perceiver/model/tile_embeddings.py](../src/agri_perceiver/model/tile_embeddings.py)
 
 ```python
 class TileEmbeddings(nn.Module):
@@ -225,7 +224,7 @@ Output: [B, 5, 729, 1152]  (now spatially grounded)
 
 ### 3.4 Vision Projector
 
-**File:** [models/projector/vision_projector.py](models/projector/vision_projector.py)
+**File:** [src/agri_perceiver/model/vision_projector.py](../src/agri_perceiver/model/vision_projector.py)
 
 ```python
 class VisionProjector(nn.Module):
@@ -260,7 +259,7 @@ This produces 3,645 visual tokens at Phi-3's native dimension.
 
 ### 3.5 Perceiver Resampler
 
-**File:** [models/perceiver/perceiver_resampler.py](models/perceiver/perceiver_resampler.py)
+**File:** [src/agri_perceiver/model/perceiver_resampler.py](../src/agri_perceiver/model/perceiver_resampler.py)
 
 The Perceiver Resampler is the most architecturally significant custom component. It compresses the 3,645 projected visual tokens down to a fixed set of **128 learned latent vectors**, acting as an information bottleneck.
 
@@ -364,7 +363,7 @@ The tokenizer's pad token is set to the EOS token (standard for Phi-3).
 
 ### LoRA Configuration (Stage 2)
 
-**File:** [models/llm/phi3_lora.py](models/llm/phi3_lora.py)
+**File:** [src/agri_perceiver/model/backbones.py](../src/agri_perceiver/model/backbones.py) — `load_language_model()`, `load_language_model_with_lora()`
 
 Two LoRA configurations are defined:
 
@@ -399,7 +398,7 @@ Phi-3 uses fused `qkv_proj` (combined Q/K/V projection), so a single LoRA adapte
 
 ## 5. Multimodal Fusion — The Splice-and-Forward Mechanism
 
-**File:** [models/agri_vlm.py](models/agri_vlm.py) — `splice_and_forward()` method
+**File:** [src/agri_perceiver/model/agri_vlm.py](../src/agri_perceiver/model/agri_vlm.py) — `splice_and_forward()` method
 
 This is the core mechanism that interleaves visual and textual information. Rather than using cross-attention between modalities (as in Flamingo), AgriPerceiver uses **early fusion via embedding splicing** (as in LLaVA).
 
@@ -496,8 +495,7 @@ The model follows a **two-stage curriculum** that progressively trains different
 
 ### 6.1 Stage 1 — Visual-Language Alignment (Pretraining)
 
-**Primary Script:** [training/train_stage1_alignment.py](training/train_stage1_alignment.py)  
-**Alternative Script:** [training/train_stage1.py](training/train_stage1.py) (uses Accelerate for multi-GPU)
+**Script:** [src/agri_perceiver/training/train_stage1.py](../src/agri_perceiver/training/train_stage1.py) (HuggingFace Accelerate)
 
 **Objective:** Train the visual bridge (TileEmbeddings + VisionProjector + PerceiverResampler) to produce visual embeddings that are semantically meaningful in Phi-3's embedding space.
 
@@ -551,8 +549,7 @@ Describe this agricultural sample.<|assistant|>
 
 ### 6.2 Stage 2 — Agricultural Specialization (Fine-tuning)
 
-**Primary Script:** [training/train_stage2_specialization.py](training/train_stage2_specialization.py)  
-**Alternative Script:** [training/train_stage2.py](training/train_stage2.py) (simpler version)
+**Script:** [src/agri_perceiver/training/train_stage2.py](../src/agri_perceiver/training/train_stage2.py)
 
 **Objective:** Fine-tune the entire model (via LoRA on Phi-3) to produce domain-specific structured JSON diagnostic reports.
 
@@ -645,7 +642,7 @@ After splicing, the label sequence is longer (128 visual tokens + 2 boundary tok
 
 ### 7.1 Alignment Dataset (Stage 1)
 
-**File:** [data/datasets/alignment_dataset.py](data/datasets/alignment_dataset.py)
+**File:** [src/agri_perceiver/data/alignment_dataset.py](../src/agri_perceiver/data/alignment_dataset.py)
 
 **Data source:** `data/alignment/generic_alignment.jsonl`
 
@@ -675,7 +672,7 @@ After splicing, the label sequence is longer (128 visual tokens + 2 boundary tok
 
 ### 7.2 AgriVLM Dataset (Stage 2)
 
-**File:** [data/datasets/agri_vlm_dataset.py](data/datasets/agri_vlm_dataset.py)
+**File:** [src/agri_perceiver/data/specialist_dataset.py](../src/agri_perceiver/data/specialist_dataset.py)
 
 **Data source:** `final_train_canonical.jsonl`
 
@@ -707,7 +704,7 @@ After splicing, the label sequence is longer (128 visual tokens + 2 boundary tok
 
 ### 7.3 Collation Functions
 
-**File:** [training/collate_fn.py](training/collate_fn.py)
+**File:** [src/agri_perceiver/data/collate.py](../src/agri_perceiver/data/collate.py)
 
 Two collation functions handle batching:
 
@@ -726,173 +723,47 @@ Two collation functions handle batching:
 
 ## 8. Inference Pipeline
 
-### Stage 1 Inference Test
+**File:** [src/agri_perceiver/inference/predictor.py](../src/agri_perceiver/inference/predictor.py) — `AgriPredictor`, also exposed as the `agri-predict` CLI
 
-**File:** [inference_test.py](inference_test.py)
-
-Tests Stage 1 alignment weights with manual greedy decoding:
-
-1. Load Phi-3 + SigLIP (no LoRA)
-2. Load `stage1_connector_weights.pt`
-3. Tile input image → `[1, 5, 3, 384, 384]`
+1. Load SigLIP and Phi-3 in bfloat16, add the image special tokens, and (for Stage 2 checkpoints) re-apply the LoRA configuration
+2. Load the checkpoint state dict (`specialist_e3.pt`; pass `use_lora=False` / `--no-lora` for Stage 1 bridge weights)
+3. Tile the input image → `[1, 5, 3, 384, 384]`
 4. Encode: `visual_latents = model.encode_images(pixel_values)`
-5. Manual token-by-token generation (150 steps max):
-   ```python
-   for _ in range(150):
-       outputs = model.splice_and_forward(input_ids, curr_mask, visual_latents)
-       next_token = torch.argmax(outputs.logits[:, -1, :], dim=-1)
-       # append token, continue...
-   ```
+5. Decode greedily, token by token, through `splice_and_forward` with the specialist prompt
+6. Parse the output into a `DiagnosticReport` ([src/agri_perceiver/inference/schema.py](../src/agri_perceiver/inference/schema.py)), repairing unbalanced braces and code fences
 
-### Stage 2 Specialist Testing
-
-**File:** [test.py](test.py) — Tests against known dataset samples with ground truth  
-**File:** [test2.py](test2.py) — Tests against arbitrary images in a folder
-
-Both scripts:
-1. Load Phi-3 + SigLIP + LoRA (must re-apply exact LoRA config)
-2. Load `agri_perceiver_specialist_e3.pt` (full state dict)
-3. Use manual greedy decoding (256–350 tokens max)
-4. Print generated JSON reports
-
-**test.py** additionally:
-- Randomly samples from the training JSONL
-- Prints ground truth JSON for comparison
-
-**test2.py** additionally:
-- Uses robust image loading via `pathlib` and `np.frombuffer` (handles edge cases like broken symlinks)
-- Processes all valid images in a target directory
-- Uses `attn_implementation="eager"` for Phi-3
+Batch inference over a test split is [scripts/experiments/run_inference.py](../scripts/experiments/run_inference.py); runtime ablations (`no_lora`, `no_anyres`, `no_tile_embed`) are [scripts/experiments/run_ablation.py](../scripts/experiments/run_ablation.py).
 
 ---
 
-## 9. HuggingFace Export — KisaanMithraa-Drishti
-
-**Directory:** `KisaanMithraa-Drishti/`
-
-This folder contains a HuggingFace-compatible model export for deployment/distribution.
-
-### Structure
+## 9. Code Map
 
 ```
-KisaanMithraa-Drishti/
-├── config.json                    # Model architecture config
-├── code/
-│   ├── modeling_kisaanmitra.py    # HF-compatible model wrapper
-│   └── models/                    # Copy of the core model code
+src/agri_perceiver/
 ├── model/
-│   ├── language_model/            # Merged Phi-3 + LoRA weights
-│   │   ├── model.safetensors      # Phi-3 weights (safetensors format)
-│   │   ├── config.json
-│   │   ├── generation_config.json
-│   │   └── tokenizer files...
-│   └── vision_encoder/            # SigLIP weights
-│       ├── model.safetensors
-│       └── config.json
-└── tokenizer/                     # Tokenizer with special tokens
-    ├── tokenizer.json
-    └── tokenizer_config.json
+│   ├── agri_vlm.py               # AgriPerceiverVLM: encode_images, splice_and_forward
+│   ├── perceiver_resampler.py    # PerceiverResampler (3,645 → 128 tokens)
+│   ├── vision_projector.py       # 1152 → 3072 MLP projector
+│   ├── tile_embeddings.py        # Learned tile position embeddings
+│   └── backbones.py              # SigLIP / Phi-3 (+ LoRA) loading
+├── data/
+│   ├── alignment_dataset.py      # Stage 1 image–caption dataset
+│   ├── specialist_dataset.py     # Stage 2 image–JSON report dataset
+│   └── collate.py                # Stage-specific collation
+├── training/
+│   ├── train_stage1.py           # Stage 1 alignment
+│   └── train_stage2.py           # Stage 2 specialisation (LoRA + weighted CE)
+├── inference/
+│   ├── predictor.py              # AgriPredictor + agri-predict CLI
+│   └── schema.py                 # DiagnosticReport schema
+└── evaluation/                   # Metrics, baselines, LLM judge, agri-eval CLI
 ```
 
-### `config.json`
-
-```json
-{
-    "model_type": "kisaanmithraa_drishti",
-    "vision_config": {
-        "backbone": "google/siglip-so400m-patch14-384",
-        "image_size": 384,
-        "patch_size": 14,
-        "num_tiles": 5
-    },
-    "bridge_config": {
-        "projector_type": "linear",
-        "perceiver_latents": 128,
-        "vision_dim": 1152,
-        "language_dim": 3072
-    }
-}
-```
-
-### `modeling_kisaanmitra.py`
-
-The `KisaanMitraVLM` class wraps the model for HuggingFace distribution:
-- `from_pretrained(model_path)` — loads vision tower, language model, and bridge weights from the export directory
-- `generate_report(pixel_values, tokenizer, prompt)` — high-level inference API (stub/incomplete)
-
-**Note:** The LoRA adapters have been **merged** into the base Phi-3 weights in the export (the model directory contains the merged `model.safetensors` without separate LoRA adapters).
+The full repository layout is in the [README](../README.md#repository-structure).
 
 ---
 
-## 10. Repository Structure
-
-```
-agri-perceiver/
-│
-├── models/                          # Core model architecture
-│   ├── agri_vlm.py                 # ★ Main VLM class (AgriPerceiverVLM)
-│   ├── vision/
-│   │   └── siglip_wrapper.py       # SigLIP encoder wrapper
-│   ├── spatial/
-│   │   └── tile_embeddings.py      # Learned tile positional embeddings
-│   ├── projector/
-│   │   └── vision_projector.py     # 1152→3072 MLP projector
-│   ├── perceiver/
-│   │   └── perceiver_resampler.py  # Perceiver Resampler (3645→128 tokens)
-│   └── llm/
-│       └── phi3_lora.py            # Phi-3 base & LoRA loading utilities
-│
-├── training/                        # Training scripts
-│   ├── train_stage1.py             # Stage 1 with Accelerate (multi-GPU)
-│   ├── train_stage1_alignment.py   # ★ Stage 1 alignment (single-GPU, production)
-│   ├── train_stage2.py             # Stage 2 basic fine-tuning
-│   ├── train_stage2_specialization.py # ★ Stage 2 specialization (production)
-│   └── collate_fn.py              # Batch collation functions
-│
-├── data/                            # Data loading & datasets
-│   ├── dataset_loader.py           # AgriDataset (pre-tiled .pt files)
-│   ├── datasets/
-│   │   ├── alignment_dataset.py    # Stage 1 image-caption dataset
-│   │   └── agri_vlm_dataset.py     # Stage 2 image-JSON report dataset
-│   └── alignment/
-│       └── generic_alignment.jsonl # Stage 1 training data
-│
-├── inference/                       # Inference modules (stubs)
-│   ├── api_server.py               # FastAPI server (empty)
-│   ├── generate_json.py            # JSON generation (empty)
-│   ├── outlines_schema.py          # Constrained decoding schema (empty)
-│   └── postprocess.py              # Post-processing (empty)
-│
-├── configs/                         # Configuration files
-│   └── paths.yaml                  # Data root & annotation paths
-│
-├── KisaanMithraa-Drishti/          # HuggingFace model export
-│   ├── config.json
-│   ├── code/                       # Model code for HF
-│   └── model/                      # Serialized weights
-│
-├── monitoring/                      # GPU monitoring utilities
-│   ├── gpu_logger.py               # Background GPU stats logger
-│   └── gpu_usage.py                # GPU log analyzer
-│
-├── tests/                           # Unit tests
-│   ├── test_dataset.py             # Dataset loading test
-│   └── test_forward_pass.py        # Forward pass with dummy models
-│
-├── inference_test.py               # Stage 1 inference test
-├── test.py                         # Stage 2 test (vs ground truth)
-├── test2.py                        # Stage 2 test (arbitrary images)
-├── setup.py                        # Package setup
-│
-├── stage1_connector_weights.pt     # ★ Stage 1 trained weights
-├── agri_perceiver_specialist_e1.pt # Stage 2 epoch 1 checkpoint
-├── agri_perceiver_specialist_e2.pt # Stage 2 epoch 2 checkpoint
-└── agri_perceiver_specialist_e3.pt # ★ Stage 2 final checkpoint
-```
-
----
-
-## 11. Tensor Shape Flow — End-to-End
+## 10. Tensor Shape Flow — End-to-End
 
 This section traces the exact tensor shapes through the entire forward pass:
 
@@ -955,60 +826,39 @@ GENERATION (inference)
 
 ---
 
-## 12. Configuration & Environment
+## 11. Configuration & Environment
 
-### `configs/paths.yaml`
-```yaml
-DATA_ROOT: "/home/vats/canonical_dataset/processed_images"
-ANNOTATIONS: "/home/vats/final_train_canonical.jsonl"
-```
+### Configuration files
 
-### Dependencies (from README)
+| File | Contents |
+|---|---|
+| [configs/model.yaml](../configs/model.yaml) | Backbones, dimensions, Perceiver (128 latents, 2 blocks, 24 heads), LoRA (r=32, α=64) |
+| [configs/stage1_alignment.yaml](../configs/stage1_alignment.yaml) | Stage 1 training hyperparameters |
+| [configs/stage2_specialization.yaml](../configs/stage2_specialization.yaml) | Stage 2 training hyperparameters |
+| [configs/eval.yaml](../configs/eval.yaml) | Evaluation metrics and baselines |
 
-```
-torch, torchvision, torchaudio (CUDA 12.1)
-transformers, accelerate, peft, bitsandbytes
-timm, einops, datasets
-wandb, fastapi, uvicorn, outlines
-pydantic, pillow, opencv-python, tqdm
-```
+### Dependencies
+
+Declared in [pyproject.toml](../pyproject.toml): core (`torch`, `transformers`, `accelerate`, `peft`, `pydantic`, …) plus the `eval`, `train`, `serve` and `dev` extras.
 
 ### Hardware Requirements
 
-- **Training:** The model was developed on a system with NVIDIA H200 GPU (indicated by inference_test.py comments)
+- **Training:** NVIDIA H200 (Stage 1 ~20 GB peak VRAM, ~6 h; Stage 2 ~35 GB, ~18 h)
 - **Inference:** Any CUDA-capable GPU with ≥16GB VRAM (bfloat16 — ~8GB for model weights)
 - **Precision:** bfloat16 throughout (critical — all components are explicitly cast)
 
 ---
 
-## 13. Monitoring & Utilities
+## 12. Testing
 
-### GPU Logger
+Run `python -m pytest` from the repo root (CI runs it on Python 3.10–3.12, plus `ruff check`).
 
-**File:** [monitoring/gpu_logger.py](monitoring/gpu_logger.py)
-
-Background process that logs GPU statistics every 60 seconds via `nvidia-smi`:
-- GPU utilization %
-- Memory utilization %
-- Memory used/total
-
-**Usage:** `nohup python monitoring/gpu_logger.py &`
-
-### GPU Usage Analyzer
-
-**File:** [monitoring/gpu_usage.py](monitoring/gpu_usage.py)
-
-Reads `gpu_usage.log` and reports average utilization statistics.
-
-### Unit Tests
-
-**[tests/test_forward_pass.py](tests/test_forward_pass.py):** Creates dummy SigLIP/Phi-3/Tokenizer models and runs a forward pass to verify the architecture connects correctly without loading real weights.
-
-**[tests/test_dataset.py](tests/test_dataset.py):** Verifies dataset loading and collation produces expected tensor shapes.
+- [tests/test_components.py](../tests/test_components.py) — shape checks for `PerceiverResampler`, `VisionProjector` and `TileEmbeddings` on dummy inputs, without loading backbone weights.
+- [tests/test_metrics.py](../tests/test_metrics.py) — structural, classification, regression and calibration metrics, schema parsing, and the composite score.
 
 ---
 
-## 14. Design Decisions & Rationale
+## 13. Design Decisions & Rationale
 
 ### Why Perceiver Resampler instead of simple pooling?
 

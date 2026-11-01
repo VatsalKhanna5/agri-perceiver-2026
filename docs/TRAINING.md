@@ -8,8 +8,8 @@ AgriPerceiver follows the established VLM two-stage curriculum:
 |---|---|---|
 | **Objective** | Align visual features to LLM embedding space | Teach structured agricultural diagnostics |
 | **Data** | Image–caption pairs | Image–JSON diagnostic report pairs |
-| **Trainable** | Bridge only (~50M params) | Bridge + LoRA (~85M params) |
-| **Frozen** | SigLIP + Phi-3 (both) | SigLIP only |
+| **Trainable** | Bridge only (~391M params) | Bridge + LoRA (~426M params) |
+| **Frozen** | SigLIP + Phi-3 (both) | SigLIP + Phi-3 base weights (LoRA adapters train) |
 | **Loss** | Causal LM (captioning) | Weighted cross-entropy (JSON generation) |
 | **Epochs** | 2 | 3 |
 | **LR** | 1e-4 | 1e-4 |

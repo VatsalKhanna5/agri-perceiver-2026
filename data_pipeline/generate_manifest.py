@@ -5,7 +5,7 @@ Indexes all images from category-labeled subfolders, assigns unique IDs,
 and creates symlinks into a flat processed_images/ directory.
 
 Usage:
-    python -m agri_perceiver.data_pipeline.generate_manifest \
+    python data_pipeline/generate_manifest.py \
         --source canonical_dataset/images \
         --target canonical_dataset/processed_images \
         --output master_manifest.jsonl

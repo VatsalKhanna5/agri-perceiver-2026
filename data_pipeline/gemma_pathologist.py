@@ -6,7 +6,7 @@ labels for agricultural leaf images. Processes images in batches with
 forced JSON pre-fill and structural repair for truncated outputs.
 
 Usage:
-    python -m agri_perceiver.data_pipeline.gemma_pathologist \
+    python data_pipeline/gemma_pathologist.py \
         --manifest master_manifest.jsonl \
         --output final_agri_dataset.jsonl \
         --batch-size 24

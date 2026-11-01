@@ -5,7 +5,7 @@ Filters by completion status and confidence threshold, then maps
 the VLM analysis schema into the canonical {diagnosis, type, severity, ...} format.
 
 Usage:
-    python -m agri_perceiver.data_pipeline.data_refining \
+    python data_pipeline/data_refining.py \
         --labels final_agri_dataset.jsonl \
         --manifest master_manifest.jsonl \
         --output final_train_canonical.jsonl

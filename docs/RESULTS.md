@@ -5,6 +5,11 @@
 **Environment:** Python 3.10, PyTorch 2.x, transformers 4.55.2  
 **Last updated:** 2026-04-22
 
+> **Status:** working tracker, kept for its per-metric breakdowns and analysis notes. Composite
+> scores here (0.717 for AgriPerceiver, 0.504–0.527 for baselines) predate the final BERTScore
+> re-run. The published numbers (composite 0.810 vs. 0.590–0.615) are in the
+> [ICA 2026 camera-ready](../papers/ica26/main.tex) and the [README](../README.md#results).
+
 ---
 
 ## Composite Score
