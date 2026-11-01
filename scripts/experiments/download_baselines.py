@@ -40,7 +40,7 @@ def main():
         try:
             # Use snapshot_download to fetch all files without triggering optional
             # heavy dependencies (torchvision for Qwen2-VL, timm already installed above).
-            print(f"  Downloading all files via snapshot_download...")
+            print("  Downloading all files via snapshot_download...")
             from huggingface_hub import snapshot_download
             local_dir = snapshot_download(
                 repo_id=name,

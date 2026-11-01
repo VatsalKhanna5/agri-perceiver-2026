@@ -8,9 +8,7 @@ All metrics are designed for the agricultural pathology JSON schema.
 
 import json
 import re
-from collections import defaultdict
 from dataclasses import dataclass, field
-from typing import Optional
 
 import numpy as np
 

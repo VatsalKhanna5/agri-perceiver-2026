@@ -8,7 +8,6 @@ actionability, and clinical reliability.
 
 import json
 from dataclasses import dataclass, field
-from typing import Optional
 
 import numpy as np
 

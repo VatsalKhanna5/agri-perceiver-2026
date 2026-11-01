@@ -2,7 +2,6 @@
 Report generation — aggregates results into tables and figures.
 """
 
-import json
 from pathlib import Path
 from typing import Optional
 
@@ -90,7 +89,7 @@ def generate_markdown_report(
         scores = [f"{results.get('composite_score', 0):.4f}"]
         for bname in baseline_results:
             scores.append(f"{baseline_results[bname].get('composite_score', 0):.4f}")
-        lines.append(f"| **Composite** | " + " | ".join(scores) + " |")
+        lines.append("| **Composite** | " + " | ".join(scores) + " |")
 
         # Key metrics
         for metric_name, path_fn in [

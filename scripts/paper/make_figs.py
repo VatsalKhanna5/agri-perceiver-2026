@@ -3,12 +3,12 @@
 All numbers trace to results/eval_results.json and docs/RESULTS.md.
 Outputs vector PDFs into papers/ica26/figures/.
 """
-import json, os
+import json
+import os
 import numpy as np
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-from matplotlib.patches import Patch
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 OUT = os.path.join(ROOT, "papers", "ica26", "figures")
@@ -16,6 +16,12 @@ os.makedirs(OUT, exist_ok=True)
 
 def save(fig, name):
     fig.savefig(os.path.join(OUT, name + ".pdf"))
+
+
+def despine(ax):
+    for side in ("top", "right"):
+        ax.spines[side].set_visible(False)
+
 
 ev = json.load(open(os.path.join(ROOT, "results", "eval_results.json")))
 
@@ -63,17 +69,20 @@ f1 = {
     "AgriPerceiver": {c: ours[i] for i, c in enumerate(classes)},
 }
 models = list(C.keys())
-x = np.arange(len(classes)); w = 0.20
+x = np.arange(len(classes))
+w = 0.20
 fig, ax = plt.subplots(figsize=(5.4, 2.6))
 for j, m in enumerate(models):
     vals = [f1[m][c] for c in classes]
     ax.bar(x + (j-1.5)*w, vals, w, label=m, color=C[m], hatch=H[m],
            edgecolor="#1a1a1a", linewidth=0.45)
 ax.set_ylabel("Pathology-type F1")
-ax.set_xticks(x); ax.set_xticklabels(classes)
+ax.set_xticks(x)
+ax.set_xticklabels(classes)
 ax.set_ylim(0, 0.95)
-ax.yaxis.grid(True, color=GRID, linewidth=0.5); ax.set_axisbelow(True)
-for s in ("top", "right"): ax.spines[s].set_visible(False)
+ax.yaxis.grid(True, color=GRID, linewidth=0.5)
+ax.set_axisbelow(True)
+despine(ax)
 ax.legend(frameon=False, fontsize=7.2, ncol=2, loc="upper right", handlelength=1.4)
 save(fig, "perclass_f1")
 plt.close(fig)
@@ -97,9 +106,11 @@ ax.scatter(conf, acc, s=sizes, color="#b3282d", edgecolor="#1a1a1a",
            linewidth=0.6, zorder=3, label="Confidence bin (area $\\propto$ count)")
 ax.set_xlabel("Mean predicted confidence")
 ax.set_ylabel("Empirical accuracy")
-ax.set_xlim(0.4, 1.02); ax.set_ylim(0.0, 1.02)
-ax.grid(True, color=GRID, linewidth=0.5); ax.set_axisbelow(True)
-for s in ("top", "right"): ax.spines[s].set_visible(False)
+ax.set_xlim(0.4, 1.02)
+ax.set_ylim(0.0, 1.02)
+ax.grid(True, color=GRID, linewidth=0.5)
+ax.set_axisbelow(True)
+despine(ax)
 ax.text(0.44, 0.92, f"ECE = {ece:.3f}", fontsize=8.5,
         bbox=dict(boxstyle="round,pad=0.3", fc="#f4f4f4", ec="#cccccc", lw=0.5))
 ax.legend(frameon=False, fontsize=6.6, loc="lower right")
@@ -117,9 +128,12 @@ cmn = cm / cm.sum(axis=1, keepdims=True)
 # cell additionally carries its numeric value, so no reading depends on colour.
 fig, ax = plt.subplots(figsize=(3.3, 2.9))
 im = ax.imshow(cmn, cmap="Blues", vmin=0, vmax=1)
-ax.set_xticks(range(6)); ax.set_xticklabels(labels)
-ax.set_yticks(range(6)); ax.set_yticklabels(labels)
-ax.set_xlabel("Predicted"); ax.set_ylabel("True")
+ax.set_xticks(range(6))
+ax.set_xticklabels(labels)
+ax.set_yticks(range(6))
+ax.set_yticklabels(labels)
+ax.set_xlabel("Predicted")
+ax.set_ylabel("True")
 for i in range(6):
     for j in range(6):
         v = cmn[i, j]
@@ -136,7 +150,9 @@ print("wrote confusion.pdf  diag acc=", round(np.trace(cm)/cm.sum(),4))
 # FIG 4 — Attention FLOPs vs #AnyRes tiles: full self-attn O(T^2) vs
 #   Perceiver cross-attn O(N T).  Analytical (real architecture constants).
 # ==========================================================================
-d = 3072; patches = 729; N = 128
+d = 3072
+patches = 729
+N = 128
 tiles = np.arange(1, 11)
 T = patches * tiles
 full = 4 * (T**2) * d            # QK^T + AV, per attention layer
@@ -155,8 +171,9 @@ ax.text(5.1, ax.get_ylim()[1]*0.02, "ours (5 tiles)", fontsize=6.6, color="#5555
 ax.set_yscale("log")
 ax.set_xlabel("Number of AnyRes tiles")
 ax.set_ylabel("Attention GFLOPs / layer")
-ax.grid(True, which="both", color=GRID, linewidth=0.5); ax.set_axisbelow(True)
-for s in ("top", "right"): ax.spines[s].set_visible(False)
+ax.grid(True, which="both", color=GRID, linewidth=0.5)
+ax.set_axisbelow(True)
+despine(ax)
 ax.legend(frameon=False, fontsize=6.8, loc="lower right")
 save(fig, "flops")
 plt.close(fig)

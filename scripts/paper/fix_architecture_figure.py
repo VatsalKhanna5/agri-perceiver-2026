@@ -124,7 +124,7 @@ SNIPPET = [
 PAD = 7.0
 avail_w = JSON_BOX.width - 2 * PAD
 avail_h = JSON_BOX.height - 2 * PAD
-widest = max(pymupdf.get_text_length(l, fontname='cour', fontsize=10) for l in SNIPPET)
+widest = max(pymupdf.get_text_length(ln, fontname='cour', fontsize=10) for ln in SNIPPET)
 JSIZE = min(10 * avail_w / widest, avail_h / (len(SNIPPET) * 1.28))
 LEAD = JSIZE * 1.28
 y = JSON_BOX.y0 + PAD + JSIZE + (avail_h - len(SNIPPET) * LEAD) / 2

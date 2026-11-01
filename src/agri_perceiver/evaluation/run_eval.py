@@ -9,10 +9,8 @@ CLI:
 
 import argparse
 import json
-import sys
 import time
 from pathlib import Path
-from typing import Optional
 
 from agri_perceiver.evaluation.metrics import (
     compute_composite_score,

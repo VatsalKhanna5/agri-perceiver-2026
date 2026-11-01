@@ -113,7 +113,7 @@ def main():
             out.write(json.dumps(output_entry) + "\n")
             written += 1
 
-    print(f"\nRefinement complete:")
+    print("\nRefinement complete:")
     print(f"  Written: {written}")
     print(f"  Skipped (failed):       {skipped_failed}")
     print(f"  Skipped (no manifest):  {skipped_no_manifest}")

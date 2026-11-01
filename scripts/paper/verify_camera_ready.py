@@ -48,8 +48,8 @@ checks = [
     # ORCIDs render as the official icon (Springer replaces the number with it),
     # so check the live hyperlinks rather than the text layer.
     ('4 ORCID iDs linked on p.1',
-     len([l for l in d[0].get_links() if 'orcid.org' in (l.get('uri') or '')]) == 4,
-     [l['uri'].rsplit('/', 1)[-1] for l in d[0].get_links() if 'orcid.org' in (l.get('uri') or '')]),
+     len([lk for lk in d[0].get_links() if 'orcid.org' in (lk.get('uri') or '')]) == 4,
+     [lk['uri'].rsplit('/', 1)[-1] for lk in d[0].get_links() if 'orcid.org' in (lk.get('uri') or '')]),
     ('\\orcidID markup kept for Springer',
      len(re.findall(r'\\orcidID\{\d{4}-\d{4}-\d{4}-\d{3}[0-9X]\}',
                     io.open(os.path.join(PAPER, 'main.tex'), encoding='utf-8').read())) == 4,

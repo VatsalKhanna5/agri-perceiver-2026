@@ -5,10 +5,7 @@ Wraps Gemma-3, LLaVA-NeXT, and InternVL2 behind a uniform interface.
 Each baseline takes an image path and returns a JSON diagnostic string.
 """
 
-import json
 from abc import ABC, abstractmethod
-from pathlib import Path
-from typing import Optional
 
 
 class BaselineModel(ABC):
@@ -126,7 +123,6 @@ class InternVL2Baseline(BaselineModel):
 
     def predict(self, image_path: str, prompt: str = BASELINE_PROMPT) -> str:
         from PIL import Image
-        import torchvision.transforms as T
 
         image = Image.open(image_path).convert("RGB")
         pixel_values = self._preprocess(image).unsqueeze(0).to(self.device)
